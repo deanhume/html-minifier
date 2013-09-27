@@ -9,14 +9,14 @@ Go from HTML that looks like this:
     <h2>
         Admin Menu</h2>
     <ul>
-        <li>@Html.ActionLink("Edit blog entries", "List", "AdminMaster")</li>
-        <li>@Html.ActionLink("View Comments", "CommentList", "AdminMaster")</li>
-        <li>@Html.ActionLink("Clear Cache", "ClearCache", "AdminMaster")</li>
+        <li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li>
+        <li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li>
+        <li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li>
     </ul>
 
 To HTML that looks like this:
 
-    <h2> Admin Menu</h2><ul><li>@Html.ActionLink("Edit blog entries", "List", "AdminMaster")</li><li>@Html.ActionLink("View Comments", "CommentList", "AdminMaster")</li><li>@Html.ActionLink("Clear Cache", "ClearCache", "AdminMaster")</li></ul> 
+    <h2> Admin Menu</h2><ul><li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li><li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li><li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li></ul> 
 
 
 For more information, check out the blog post on my site.
