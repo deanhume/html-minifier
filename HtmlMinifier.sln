@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViewMinifier", "ViewMinifier\ViewMinifier.csproj", "{339A7163-32AC-413A-BF8F-EB30E8B5C136}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlMinifier", "ViewMinifier\HtmlMinifier.csproj", "{339A7163-32AC-413A-BF8F-EB30E8B5C136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

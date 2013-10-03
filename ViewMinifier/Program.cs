@@ -1,4 +1,4 @@
-﻿namespace ViewMinifier
+﻿namespace HtmlMinifier
 {
     using System;
     using System.Collections.Generic;
@@ -10,7 +10,7 @@
     {
         static void Main(string[] args)
         {
-            string folderPath = GetFolderpath(args);
+            string folderPath = @"C:\Users\d.hume\Desktop\file";//GetFolderpath(args);
 
             IEnumerable<string> allDirectories = GetSubdirectoriesContainingOnlyFiles(folderPath);
 
@@ -21,7 +21,7 @@
 
                 foreach (var filePath in filePaths)
                 {
-                    if (filePath.Contains(".cshtml") || filePath.Contains(".aspx"))
+                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm"))
                     {
                         // Minify contents
                         string minifiedContents = MinifyContents(filePath);
@@ -39,8 +39,17 @@
 
         static IEnumerable<string> GetSubdirectoriesContainingOnlyFiles(string path)
         {
-            return from subdirectory in Directory.GetDirectories(path, "*", SearchOption.AllDirectories)
-                   select subdirectory;
+            // Get all subdirectories
+            IEnumerable<string> directories = from subdirectory in Directory.GetDirectories(path, "*", SearchOption.AllDirectories) select subdirectory;
+
+            // If there are no subdirectories, use the root folder
+            IList<string> allDirectories = directories as IList<string> ?? directories.ToList();
+            if (!allDirectories.Any())
+            {
+                allDirectories.Add(path);
+            }
+
+            return allDirectories;
         }
 
         private static string GetFolderpath(string[] args)

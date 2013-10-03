@@ -7,8 +7,8 @@
     <ProjectGuid>{339A7163-32AC-413A-BF8F-EB30E8B5C136}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ViewMinifier</RootNamespace>
-    <AssemblyName>ViewMinifier</AssemblyName>
+    <RootNamespace>HtmlMinifier</RootNamespace>
+    <AssemblyName>HtmlMinifier</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
