@@ -10,7 +10,7 @@
     {
         static void Main(string[] args)
         {
-            string folderPath = @"C:\Users\d.hume\Desktop\file";//GetFolderpath(args);
+            string folderPath = GetFolderpath(args);
 
             IEnumerable<string> allDirectories = GetSubdirectoriesContainingOnlyFiles(folderPath);
 
