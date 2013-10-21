@@ -2,7 +2,7 @@ HTML Minifier
 =============
 
 A simple command line tool to minify your HTML, Razor views & Web Forms views. By minifying your HTML on bigger web pages, 
-you will save on bytes that your users need to donwload. Less bytes equal faster web page & faster web pages equals happy users!
+you will save on bytes that your users need to donwload. Less bytes equal faster web pages & faster web pages equal happy users!
 
 Go from HTML that looks like this:
 
