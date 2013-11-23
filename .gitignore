@@ -1,8 +1,6 @@
 Thumbs.db
 Debug/*.map
 Release/*.map
-www/Content/met/compass/css*/
-www/Content/met/less/*.css
 *.obj
 *.exe
 *.pdb
@@ -49,9 +47,3 @@ _UpgradeReport_Files/*
 UpgradeLog*.htm
 UpgradeLog*.XML
 desktop.ini
-www/Scripts/typings/angularjs/*.js
-www/Scripts/typings/angularjs/*.js.map
-www/Scripts/typings/d3/*.js
-www/Scripts/typings/d3/*.js.map
-www/Scripts/typings/jquery/*.js
-www/Scripts/typings/jquery/*.js.map
