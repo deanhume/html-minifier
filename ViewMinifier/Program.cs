@@ -23,12 +23,14 @@
 
             IEnumerable<string> allDirectories = GetSubdirectoriesContainingOnlyFiles(folderName, filePattern);
             var settings = GetMinifierArgs(args);
+            var paras = GetParams(args);
             var minifier = GetMinifier(settings);
+            int warnings = 0, errors = 0;
 
             // Loop through the files in the folder and look for *.cshtml & *.aspx
             foreach (string folder in allDirectories)
             {
-                string[] filePaths = Directory.GetFiles(folder, filePattern);
+                string[] filePaths = Directory.GetFiles(folder, filePattern, paras.Contains("-r") ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
                 foreach (var filePath in filePaths)
                 {
@@ -36,14 +38,14 @@
                     var fileExtensions = new string[] {
                         ".cshtml", "vbhtml", ".aspx", ".html", ".htm"
                     };
-                    if (fileExtensions.Any(fe => Path.GetExtension(fe)== Path.GetExtension(fp)))
+                    if (!fp.Contains(".min.") && (fileExtensions.Any(fe => Path.GetExtension(fe)== Path.GetExtension(fp))))
                     {
                         // Minify contents
                         var fileText = File.ReadAllText(fp);
                         var minifiedContents = minifier.Minify(fileText, true);
 
                         // Write to output filename
-                        var outputPath = Path.Combine(folder, Path.GetFileNameWithoutExtension(fp)+".min"+Path.GetExtension(fp));
+                        var outputPath = Path.Combine(Path.GetDirectoryName(fp), Path.GetFileNameWithoutExtension(fp)+".min"+Path.GetExtension(fp));
                         if (String.IsNullOrWhiteSpace(minifiedContents.MinifiedContent))
                             File.Delete(outputPath);
                         else
@@ -53,10 +55,13 @@
                             minifiedContents.Statistics.OriginalSize, minifiedContents.Statistics.MinifiedSize));
                         OutputErrors(minifiedContents.Errors, ConsoleColor.Red);
                         OutputErrors(minifiedContents.Warnings, ConsoleColor.DarkYellow);
-                        Console.WriteLine(String.Format("{0} Warnings, {0} Errors", minifiedContents.Warnings.Count(), minifiedContents.Errors.Count()));
+                        warnings += minifiedContents.Warnings.Count();
+                        errors += minifiedContents.Errors.Count();
                     }
                 }
             }
+            Console.WriteLine(String.Format("\n{0} Warnings, {1} Errors", warnings, errors));
+            Environment.Exit(errors);
         }
 
         static void OutputErrors(IList<WebMarkupMin.Core.Minifiers.MinificationErrorInfo> ei, ConsoleColor c)
@@ -102,16 +107,44 @@
             return args[0];
         }
 
-        private static IDictionary<string,string> GetMinifierArgs(string[] args)
+        // TODO: could combine this into one loop and return both params and arguments
+        private static IList<string> GetParams(string[] args)
         {
-            var dict = new Dictionary<string,string>();
+            var list = new List<string>();
             for (var i = 1; i < args.Length; i++)
             {
                 var arg = args[i];
-                var parts = arg.Split('=');
-                if (parts.Length != 2)
-                    throw new ArgumentException("Unknown argument : " + arg);
-                dict.Add(parts[0], parts[1]);
+                if (arg.StartsWith("-"))
+                {
+                    switch (arg)
+                    {
+                        case "-r":
+                            list.Add(arg);
+                        break;
+
+                        default:
+                            throw new ArgumentException("Unknown parameter : " + arg);
+                    }
+                }
+            }
+
+            return list;
+        }
+
+        // TODO: could combine this into one loop and return both params and arguments
+        private static IDictionary<string, string> GetMinifierArgs(string[] args)
+        {
+            var dict = new Dictionary<string, string>();
+            for (var i = 1; i < args.Length; i++)
+            {
+                var arg = args[i];
+                if (arg.StartsWith("-") == false)
+                {
+                    var parts = arg.Split('=');
+                    if (parts.Length != 2)
+                        throw new ArgumentException("Unknown argument : " + arg);
+                    dict.Add(parts[0], parts[1]);
+                }
             }
 
             return dict;
