@@ -45,7 +45,7 @@
                         var minifiedContents = minifier.Minify(fileText, true);
 
                         // Write to output filename
-                        var outputPath = Path.Combine(Path.GetDirectoryName(fp), Path.GetFileNameWithoutExtension(fp)+".min"+Path.GetExtension(fp));
+                        var outputPath = Path.Combine(Path.GetDirectoryName(fp), Path.GetFileNameWithoutExtension(fp) + ".min" + Path.GetExtension(fp));
                         if (String.IsNullOrWhiteSpace(minifiedContents.MinifiedContent))
                             File.Delete(outputPath);
                         else
