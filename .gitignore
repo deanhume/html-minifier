@@ -47,3 +47,4 @@ _UpgradeReport_Files/*
 UpgradeLog*.htm
 UpgradeLog*.XML
 desktop.ini
+tool/*
