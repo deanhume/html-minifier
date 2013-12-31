@@ -34,7 +34,7 @@
                 }
             }
 
-            Console.WriteLine("Minifcation Complete");
+            Console.WriteLine("Minification Complete");
         }
 
         static IEnumerable<string> GetSubdirectoriesContainingOnlyFiles(string path)
