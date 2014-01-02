@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlMinifier", "ViewMinifier\HtmlMinifier.csproj", "{339A7163-32AC-413A-BF8F-EB30E8B5C136}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlMinifier.Tests", "HtmlMinifier.Tests\HtmlMinifier.Tests.csproj", "{341977AB-6D6D-491F-B9A0-BFF56C521640}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,10 @@ Global
 		{339A7163-32AC-413A-BF8F-EB30E8B5C136}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{339A7163-32AC-413A-BF8F-EB30E8B5C136}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{339A7163-32AC-413A-BF8F-EB30E8B5C136}.Release|Any CPU.Build.0 = Release|Any CPU
+		{341977AB-6D6D-491F-B9A0-BFF56C521640}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{341977AB-6D6D-491F-B9A0-BFF56C521640}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{341977AB-6D6D-491F-B9A0-BFF56C521640}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{341977AB-6D6D-491F-B9A0-BFF56C521640}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,10 @@
     using System.Linq;
     using System.Text.RegularExpressions;
 
-    class Program
+    /// <summary>
+    /// The html minification class.
+    /// </summary>
+    public class Program
     {
         static void Main(string[] args)
         {
@@ -24,7 +27,7 @@
                     if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm"))
                     {
                         // Minify contents
-                        string minifiedContents = MinifyContents(filePath);
+                        string minifiedContents = ReadHtml(filePath);
 
                         // Write to the same file
                         File.WriteAllText(filePath, minifiedContents);
@@ -72,36 +75,95 @@
         /// <param name="filePath">
         /// The file path.
         /// </param>
-        private static string MinifyContents(string filePath)
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string ReadHtml(string filePath)
         {
             // Read in the file contents
-            string readToEnd;
+            string contents;
             using (var reader = new StreamReader(filePath))
             {
-                readToEnd = reader.ReadToEnd();
+                // Minify the contents
+                contents = MinifyHtml(reader.ReadToEnd());
 
-                // Replace spaces between quotes
-                readToEnd = Regex.Replace(readToEnd, @"\s+", " ");
-                
-                // Replace line breaks
-                readToEnd = Regex.Replace(readToEnd, @"\s*\n\s*", "\n");
+                // Re-add the @model declaration
+                contents = ReArrangeModelDeclaration(contents);
+            }
 
-                // Replace spaces between brackets
-                readToEnd = Regex.Replace(readToEnd, @"\s*\>\s*\<\s*", "><");
-                
-                // Replace comments
-                readToEnd = Regex.Replace(readToEnd, @"<!--(.*?)-->", "");
+            return contents;
+        }
 
-                // single-line doctype must be preserved 
-                var firstEndBracketPosition = readToEnd.IndexOf(">", System.StringComparison.Ordinal);
-                if (firstEndBracketPosition >= 0)
+        /// <summary>
+        /// Re-arranges the razor syntax with the @model declaration on its
+        /// own line. It seems to break the razor engine if this isnt on
+        /// it's own line.
+        /// </summary>
+        /// <param name="fileContents">The file contents.</param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string ReArrangeModelDeclaration(string fileContents)
+        {
+            int modelPosition = fileContents.IndexOf("@model ");
+
+            int position = 7;
+            while (modelPosition >= 0)
+            {
+                // move one forward
+                position += 1;
+                string substring = fileContents.Substring(modelPosition, position);
+
+                // check if it contains a whitespace at the end
+                if (substring.EndsWith(" "))
                 {
-                    readToEnd = readToEnd.Remove(firstEndBracketPosition, 1);
-                    readToEnd = readToEnd.Insert(firstEndBracketPosition, ">");
+                    // first replace the occurence
+                    fileContents = fileContents.Replace(substring, "");
+
+                    // Next move it to the top on its own line
+                    fileContents = substring + Environment.NewLine + fileContents;
+
+                    return fileContents;
                 }
             }
 
-            return readToEnd;
+            return fileContents;
+        }
+
+        /// <summary>
+        /// Minifies the given HTML string.
+        /// </summary>
+        /// <param name="htmlContents">
+        /// The html to minify.
+        /// </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string MinifyHtml(string htmlContents)
+        {
+            // Replace line comments
+            htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
+
+            // Replace spaces between quotes
+            htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
+
+            // Replace line breaks
+            htmlContents = Regex.Replace(htmlContents, @"\s*\n\s*", "\n");
+
+            // Replace spaces between brackets
+            htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
+
+            // Replace comments
+            htmlContents = Regex.Replace(htmlContents, @"<!--(.*?)-->", "");
+
+            // single-line doctype must be preserved 
+            var firstEndBracketPosition = htmlContents.IndexOf(">", StringComparison.Ordinal);
+            if (firstEndBracketPosition >= 0)
+            {
+                htmlContents = htmlContents.Remove(firstEndBracketPosition, 1);
+                htmlContents = htmlContents.Insert(firstEndBracketPosition, ">");
+            }
+            return htmlContents;
         }
     }
 }

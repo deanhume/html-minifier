@@ -1,0 +1,1 @@
+﻿<!DOCTYPE html><html lang="en"> @if (foo) { <text>Plain Text</text> } @* This is a server side multiline comment *@ <script type="text/javascript"> w._gaq = w._gaq || []; w._gaq.push(['_setAccount', 'UA-11951201-1'], ['_trackPageview'], ['_setSiteSpeedSampleRate', 75]); </script></body></html> 
