@@ -19,4 +19,6 @@ To HTML that looks like this:
     <h2> Admin Menu</h2><ul><li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li><li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li><li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li></ul> 
 
 
-For more information, check out the blog post on my site.
+For more information, check out the blog post [on my site.](http://deanhume.com/Home/BlogPost/a-simple-html-minifier-for-asp-net/2097)
+
+
