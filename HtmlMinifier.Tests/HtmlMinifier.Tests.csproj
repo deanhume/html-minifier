@@ -58,6 +58,8 @@
   <ItemGroup>
     <Content Include="Data\CommentsResult.txt" />
     <Content Include="Data\Comments.txt" />
+    <Content Include="Data\ModelListResult.txt" />
+    <Content Include="Data\ModelList.txt" />
     <Content Include="Data\StandardResult.txt" />
     <Content Include="Data\Standard.txt" />
   </ItemGroup>

@@ -40,6 +40,21 @@
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
+        [Test]
+        public void MinifyContents_WithModelList_ShouldReturnCorrectly()
+        {
+            // Arrange
+            string filePath = Path.Combine(_testDataFolder, "ModelList.txt");
+
+            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "ModelListResult.txt"));
+
+            // Act
+            string minifiedHtml = Program.ReadHtml(filePath);
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
         #region Helpers
 
         public string ReadFileContents(string filePath)

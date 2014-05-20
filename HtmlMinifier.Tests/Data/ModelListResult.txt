@@ -1,0 +1,2 @@
+﻿@model List<Test>
+@using System.Web.Optimization <div class="row"></div>
