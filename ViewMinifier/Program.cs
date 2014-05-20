@@ -115,7 +115,7 @@
                 string substring = fileContents.Substring(modelPosition, position);
 
                 // check if it contains a whitespace at the end
-                if (substring.EndsWith(" "))
+                if (substring.EndsWith(" ") || substring.EndsWith(">"))
                 {
                     // first replace the occurence
                     fileContents = fileContents.Replace(substring, "");
