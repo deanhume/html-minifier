@@ -154,7 +154,7 @@
             htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
 
             // Replace comments
-            htmlContents = Regex.Replace(htmlContents, @"<!--(.*?)-->", "");
+            htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(.*?)-->", "");
 
             // single-line doctype must be preserved 
             var firstEndBracketPosition = htmlContents.IndexOf(">", StringComparison.Ordinal);
@@ -163,7 +163,7 @@
                 htmlContents = htmlContents.Remove(firstEndBracketPosition, 1);
                 htmlContents = htmlContents.Insert(firstEndBracketPosition, ">");
             }
-            return htmlContents;
+            return htmlContents.Trim();
         }
     }
 }
