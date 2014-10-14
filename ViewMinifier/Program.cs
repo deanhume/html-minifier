@@ -24,7 +24,7 @@
 
                 foreach (var filePath in filePaths)
                 {
-                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm"))
+                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm") || filePath.Contains(".ascx"))
                     {
                         // Minify contents
                         string minifiedContents = ReadHtml(filePath);
