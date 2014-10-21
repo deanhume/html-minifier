@@ -15,7 +15,7 @@
         {
             string folderPath = GetFolderpath(args);
 
-            IEnumerable<string> allDirectories = GetSubdirectoriesContainingOnlyFiles(folderPath);
+            IEnumerable<string> allDirectories = GetDirectories(folderPath);
 
             // Loop through the files in the folder and look for *.cshtml & *.aspx
             foreach (string folder in allDirectories)
@@ -40,17 +40,16 @@
             Console.WriteLine("Minification Complete");
         }
 
-        static IEnumerable<string> GetSubdirectoriesContainingOnlyFiles(string path)
+        public static IEnumerable<string> GetDirectories(string path)
         {
             // Get all subdirectories
             IEnumerable<string> directories = from subdirectory in Directory.GetDirectories(path, "*", SearchOption.AllDirectories) select subdirectory;
 
-            // If there are no subdirectories, use the root folder
+            // Add the subdirectories
             IList<string> allDirectories = directories as IList<string> ?? directories.ToList();
-            if (!allDirectories.Any())
-            {
-                allDirectories.Add(path);
-            }
+
+            // Add the root folder
+            allDirectories.Add(path);
 
             return allDirectories;
         }

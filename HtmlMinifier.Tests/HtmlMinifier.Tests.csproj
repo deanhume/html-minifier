@@ -54,7 +54,9 @@
       <Name>HtmlMinifier</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Data\Subdirectory\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Data\CommentsResult.txt" />
     <Content Include="Data\Comments.txt" />

@@ -1,4 +1,7 @@
-﻿namespace HtmlMinifier.Tests
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace HtmlMinifier.Tests
 {
     using System;
     using System.IO;
@@ -53,6 +56,31 @@
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void GetDirectories_WithFolderPath_ReturnsRootAndSubdirectories()
+        {
+            // Arrange
+ 
+            // Act
+            IEnumerable<string> rootAndSubdirectories = Program.GetDirectories(_testDataFolder);
+
+            // Assert
+            Assert.That(rootAndSubdirectories.Count(), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void GetDirectories_WithFolderPath_ReturnsRoot()
+        {
+            // Arrange
+            string rootFolderPath = Path.Combine(_testDataFolder, @"Subdirectory");
+
+            // Act
+            IEnumerable<string> rootAndSubdirectories = Program.GetDirectories(rootFolderPath);
+
+            // Assert
+            Assert.That(rootAndSubdirectories.Count(), Is.EqualTo(1));
         }
 
         #region Helpers
