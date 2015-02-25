@@ -1,0 +1,20 @@
+﻿@using System.Web.Optimization
+@model Test
+@section Styles
+{
+    @Styles.Render("~/Css/Profile")
+}
+
+@Html.Partial("ProfilesMenu")
+
+ÁÉŐÓÜ
+<div class="row">
+    <div class="col-md-12">
+        <div class="data-block">
+            <span class="current-venue-header" data-bind="text: currentVenue().VenueName">ÁÉŐÓÜ</span>
+            <div class="btn-group" data-bind="visible: currentVenue().VenueId() != null">ÁÉŐÓÜ    </div>
+        </div>
+	</div>
+</div> 
+<p>ÁÉŐÓÜ ÁÉŐÓÜ ÁÉŐÓÜ</p>
+

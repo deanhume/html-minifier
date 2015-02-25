@@ -60,6 +60,10 @@
   <ItemGroup>
     <Content Include="Data\CommentsResult.txt" />
     <Content Include="Data\Comments.txt" />
+    <Content Include="Data\GithubIssue10Result.txt" />
+    <Content Include="Data\GithubIssue10.txt" />
+    <Content Include="Data\LanguageSpecificCharactersResult.txt" />
+    <Content Include="Data\LanguageSpecificCharacters.txt" />
     <Content Include="Data\ModelListResult.txt" />
     <Content Include="Data\ModelList.txt" />
     <Content Include="Data\StandardResult.txt" />

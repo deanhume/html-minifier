@@ -83,6 +83,35 @@ namespace HtmlMinifier.Tests
             Assert.That(rootAndSubdirectories.Count(), Is.EqualTo(1));
         }
 
+        [Test]
+        public void MinifyContents_WithLanguageSpecficCharacters_ShouldReturnCorrectly()
+        {
+            string filePath = Path.Combine(_testDataFolder, "LanguageSpecificCharacters.txt");
+
+            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "LanguageSpecificCharactersResult.txt"));
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void GithubIssue10__ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/10                  
+            string filePath = Path.Combine(_testDataFolder, "GithubIssue10.txt");
+
+            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "GithubIssue10Result.txt"));
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
         #region Helpers
 
         public string ReadFileContents(string filePath)
