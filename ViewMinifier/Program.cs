@@ -40,6 +40,11 @@
             Console.WriteLine("Minification Complete");
         }
 
+        /// <summary>
+        /// Gets the directories and subdirectories for a given path.
+        /// </summary>
+        /// <param name="path">The path</param>
+        /// <returns>A list of the directories.</returns>
         public static IEnumerable<string> GetDirectories(string path)
         {
             // Get all subdirectories
@@ -54,6 +59,11 @@
             return allDirectories;
         }
 
+        /// <summary>
+        /// Get the folder path
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns>A string with the folder path</returns>
         private static string GetFolderpath(string[] args)
         {
             // Check that the folder path is provided
