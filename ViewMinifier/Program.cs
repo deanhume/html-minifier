@@ -191,7 +191,7 @@
             int maxLength = 60000;
 
             // This is a check to see if the args contain an optional parameter for the max line length
-            if (args.Length > 1)
+            if (args != null && args.Length > 1)
             {
                 // Try and parse the value sent through
                 if (!int.TryParse(args[1], out maxLength))

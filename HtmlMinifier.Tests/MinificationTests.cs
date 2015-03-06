@@ -112,6 +112,21 @@
         }
 
         [Test]
+        public void GithubIssue13__ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/13                  
+            string filePath = Path.Combine(_testDataFolder, "GithubIssue13.txt");
+
+            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "GithubIssue13Result.txt"));
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
         public void SixtyFiveKCharacters__ShouldBreakToNextLine()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  

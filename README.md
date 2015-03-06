@@ -26,6 +26,10 @@ In order to use from the command line, you simply pass through a folder path tha
 
     C:\>HtmlMinifier.exe "C:\ImagesFolder"
 
+If you'd like to restrict the number of characters per line and force it to break to the next line, use the minifier with the following optional value (where the number is the max character count).
+
+    C:\>HtmlMinifier.exe "C:\ImagesFolder" "60000"
+
 If you'd like to find out how to use this with MSBUILD and your next publish, please follow this [link.](http://deanhume.com/Home/BlogPost/a-simple-html-minifier-for-asp-net/2097)
 
 ## Maintainers
