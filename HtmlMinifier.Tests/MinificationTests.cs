@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace HtmlMinifier.Tests
+﻿namespace HtmlMinifier.Tests
 {
     using System;
     using System.IO;
+    using System.Collections.Generic;
+    using System.Linq;
 
     using NUnit.Framework;
 
@@ -110,6 +109,44 @@ namespace HtmlMinifier.Tests
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void SixtyFiveKCharacters__ShouldBreakToNextLine()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  
+            string filePath = Path.Combine(_testDataFolder, "65K.txt");
+            List<string> args = new List<string> {"pathToFiles", "60000"};
+
+            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "65KResult.txt"));
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+
+            string newMinifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
+
+            // Assert
+            Assert.That(newMinifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void SixtyFiveKCharacters__WithoutArgs_ShouldMakeNoChange()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  
+            string filePath = Path.Combine(_testDataFolder, "Standard.txt");
+            List<string> args = new List<string> { "pathToFiles" };
+
+            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "StandardResult.txt"));
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+
+            string newMinifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
+
+            string reArranged = Program.ReArrangeModelDeclaration(newMinifiedHtml);
+
+            // Assert
+            Assert.That(reArranged, Is.EqualTo(expectedResult));
         }
 
         #region Helpers

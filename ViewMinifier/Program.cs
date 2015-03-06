@@ -94,7 +94,10 @@
             using (var reader = new StreamReader(filePath))
             {
                 // Minify the contents
-                contents = EnsureMaxLength(MinifyHtml(reader.ReadToEnd()), args);
+                contents = MinifyHtml(reader.ReadToEnd());
+
+                // Ensure that the max length is less than 65K characters
+                contents = EnsureMaxLength(contents, args);
 
                 // Re-add the @model declaration
                 contents = ReArrangeModelDeclaration(contents);
@@ -176,26 +179,36 @@
             return htmlContents.Trim();
         }
 
+        /// <summary>
+        /// Ensure that the max character count is less than 65K.
+        /// If so, break onto the next line.
+        /// </summary>
+        /// <param name="htmlContents">The minified HTML</param>
+        /// <param name="args">An optional parameter for the max character count</param>
+        /// <returns>A html string</returns>
         public static string EnsureMaxLength(string htmlContents, string[] args)
         {
-            int iMaxLength = 60000;
+            int maxLength = 60000;
 
+            // This is a check to see if the args contain an optional parameter for the max line length
             if (args.Length > 1)
             {
-                if (!int.TryParse(args[1], out iMaxLength)) iMaxLength = 60000;
-            }
+                // Try and parse the value sent through
+                if (!int.TryParse(args[1], out maxLength))
+                {
+                    maxLength = 60000;
+                }
 
-            htmlContents = htmlContents.Trim();
+                int htmlLength = htmlContents.Length;
+                int currentMaxLength = maxLength;
+                int position;
 
-            int iLen = htmlContents.Length;
-            int iCurMaxLength = iMaxLength;
-            int iPos;
-
-            while (iLen > iCurMaxLength)
-            {
-                iPos = htmlContents.LastIndexOf("><", iCurMaxLength);
-                htmlContents = htmlContents.Substring(0, iPos + 1) + "\n" + htmlContents.Substring(iPos + 1);
-                iCurMaxLength += iMaxLength;
+                while (htmlLength > currentMaxLength)
+                {
+                    position = htmlContents.LastIndexOf("><", currentMaxLength);
+                    htmlContents = htmlContents.Substring(0, position + 1) + "\r\n" + htmlContents.Substring(position + 1);
+                    currentMaxLength += maxLength;
+                }
             }
 
             return htmlContents;

@@ -58,6 +58,7 @@
     <Folder Include="Data\Subdirectory\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\65KResult.txt" />
     <Content Include="Data\CommentsResult.txt" />
     <Content Include="Data\Comments.txt" />
     <Content Include="Data\GithubIssue10Result.txt" />
@@ -66,6 +67,7 @@
     <Content Include="Data\LanguageSpecificCharacters.txt" />
     <Content Include="Data\ModelListResult.txt" />
     <Content Include="Data\ModelList.txt" />
+    <Content Include="Data\65K.txt" />
     <Content Include="Data\StandardResult.txt" />
     <Content Include="Data\Standard.txt" />
   </ItemGroup>
