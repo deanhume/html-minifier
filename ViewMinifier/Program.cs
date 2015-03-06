@@ -27,7 +27,7 @@
                     if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm") || filePath.Contains(".ascx"))
                     {
                         // Minify contents
-                        string minifiedContents = ReadHtml(filePath);
+                        string minifiedContents = ReadHtml(filePath, args);
 
                         // Write to the same file
                         File.WriteAllText(filePath, minifiedContents);
@@ -87,14 +87,14 @@
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public static string ReadHtml(string filePath)
+        public static string ReadHtml(string filePath, string[] args = null)
         {
             // Read in the file contents
             string contents;
             using (var reader = new StreamReader(filePath))
             {
                 // Minify the contents
-                contents = MinifyHtml(reader.ReadToEnd());
+                contents = EnsureMaxLength(MinifyHtml(reader.ReadToEnd()), args);
 
                 // Re-add the @model declaration
                 contents = ReArrangeModelDeclaration(contents);
@@ -172,7 +172,33 @@
                 htmlContents = htmlContents.Remove(firstEndBracketPosition, 1);
                 htmlContents = htmlContents.Insert(firstEndBracketPosition, ">");
             }
+
             return htmlContents.Trim();
+        }
+
+        public static string EnsureMaxLength(string htmlContents, string[] args)
+        {
+            int iMaxLength = 60000;
+
+            if (args.Length > 1)
+            {
+                if (!int.TryParse(args[1], out iMaxLength)) iMaxLength = 60000;
+            }
+
+            htmlContents = htmlContents.Trim();
+
+            int iLen = htmlContents.Length;
+            int iCurMaxLength = iMaxLength;
+            int iPos;
+
+            while (iLen > iCurMaxLength)
+            {
+                iPos = htmlContents.LastIndexOf("><", iCurMaxLength);
+                htmlContents = htmlContents.Substring(0, iPos + 1) + "\n" + htmlContents.Substring(iPos + 1);
+                iCurMaxLength += iMaxLength;
+            }
+
+            return htmlContents;
         }
     }
 }
