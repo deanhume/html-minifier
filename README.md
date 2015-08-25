@@ -1,4 +1,4 @@
-HTML Minifier
+HTML Minifier <image src="https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=true" width="100">
 =============
 
 A simple command line tool to minify your HTML, Razor views & Web Forms views. By minifying your HTML on bigger web pages, 
