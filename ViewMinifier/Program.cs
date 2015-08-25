@@ -13,6 +13,16 @@
     {
         static void Main(string[] args)
         {
+            // perhaps add to appsetting in web.config
+            List<string> extensionsToMinify = new List<string>();
+            extensionsToMinify.Add(".cshtml");
+            extensionsToMinify.Add(".vbhtml");
+            extensionsToMinify.Add(".aspx");
+            extensionsToMinify.Add(".html");
+            extensionsToMinify.Add(".htm");
+            extensionsToMinify.Add(".ascx");
+            extensionsToMinify.Add(".master");  // RF: we should minify these too
+
             string folderPath = GetFolderpath(args);
 
             IEnumerable<string> allDirectories = GetDirectories(folderPath);
@@ -24,7 +34,10 @@
 
                 foreach (var filePath in filePaths)
                 {
-                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm") || filePath.Contains(".ascx"))
+                    // lower the path because some files have uppercase extensions e.g. default.Aspx
+                    string extension = filePath.Substring(filePath.LastIndexOf('.')).ToLower();
+
+                    if (extensionsToMinify.Contains(extension))
                     {
                         // Minify contents
                         string minifiedContents = ReadHtml(filePath, args);
@@ -153,6 +166,10 @@
         /// </returns>
         public static string MinifyHtml(string htmlContents)
         {
+            // we need to remove JavaScript comments
+            // bringing html up onto a line that has comments causes big boom smash a lot
+            htmlContents = Regex.Replace(htmlContents, @"[^:|""|']//(.*?)\r?\n", "");
+
             // Replace line comments
             htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
 
