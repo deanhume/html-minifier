@@ -64,31 +64,6 @@
         }
 
         [Test]
-        public void GetDirectories_WithFolderPath_ReturnsRootAndSubdirectories()
-        {
-            // Arrange
- 
-            // Act
-            IEnumerable<string> rootAndSubdirectories = Program.GetDirectories(_testDataFolder);
-
-            // Assert
-            Assert.That(rootAndSubdirectories.Count(), Is.EqualTo(2));
-        }
-
-        [Test]
-        public void GetDirectories_WithFolderPath_ReturnsRoot()
-        {
-            // Arrange
-            string rootFolderPath = Path.Combine(_testDataFolder, @"Subdirectory");
-
-            // Act
-            IEnumerable<string> rootAndSubdirectories = Program.GetDirectories(rootFolderPath);
-
-            // Assert
-            Assert.That(rootAndSubdirectories.Count(), Is.EqualTo(1));
-        }
-
-        [Test]
         public void MinifyContents_WithLanguageSpecficCharacters_ShouldReturnCorrectly()
         {
             // Arrange
