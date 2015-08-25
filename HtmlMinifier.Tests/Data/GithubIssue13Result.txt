@@ -1,0 +1,1 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic> @{ Layout = "Views/Shared/_Layout.cshtml"; } <h1>Looks like something went wrong.</h1><p>Sorry, we are experiencing technical difficulties. We are working on getting this problem resolved. Sorry for any inconvenience!</p>
