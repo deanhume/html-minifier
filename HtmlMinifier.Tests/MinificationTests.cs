@@ -16,12 +16,14 @@
         public void ReadHtml_WithStandardText_ShouldReturnCorrectly()
         {
             // Arrange
-            string filePath = Path.Combine(_testDataFolder, "standard.txt");
-
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "standardresult.txt"));
+            string expectedResult = DataHelpers.StandardResult;
 
             // Act
-            string minifiedHtml = Program.ReadHtml(filePath);
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.Standard);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -31,12 +33,14 @@
         public void MinifyContents_WithComments_ShouldReturnCorrectly()
         {
             // Arrange
-            string filePath = Path.Combine(_testDataFolder, "comments.txt");
-
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "commentsresult.txt"));
+            string expectedResult = DataHelpers.CommentsResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.Comments);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -46,12 +50,14 @@
         public void MinifyContents_WithModelList_ShouldReturnCorrectly()
         {
             // Arrange
-            string filePath = Path.Combine(_testDataFolder, "ModelList.txt");
-
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "ModelListResult.txt"));
+            string expectedResult = DataHelpers.ModelListResult;
 
             // Act
-            string minifiedHtml = Program.ReadHtml(filePath);
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.ModelList);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -85,12 +91,15 @@
         [Test]
         public void MinifyContents_WithLanguageSpecficCharacters_ShouldReturnCorrectly()
         {
-            string filePath = Path.Combine(_testDataFolder, "LanguageSpecificCharacters.txt");
-
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "LanguageSpecificCharactersResult.txt"));
+            // Arrange
+            string expectedResult = DataHelpers.LanguageSpecificCharactersResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.LanguageSpecificCharacters);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -100,12 +109,15 @@
         public void GithubIssue10__ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/10                  
-            string filePath = Path.Combine(_testDataFolder, "GithubIssue10.txt");
-
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "GithubIssue10Result.txt"));
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue10Result;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue10);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -115,12 +127,14 @@
         public void GithubIssue13__ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/13                  
-            string filePath = Path.Combine(_testDataFolder, "GithubIssue13.txt");
-
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "GithubIssue13Result.txt"));
+            string expectedResult = DataHelpers.GithubIssue13Result;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue13);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -130,38 +144,38 @@
         public void SixtyFiveKCharacters__ShouldBreakToNextLine()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  
-            string filePath = Path.Combine(_testDataFolder, "65K.txt");
             List<string> args = new List<string> {"pathToFiles", "60000"};
 
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "65KResult.txt"));
+            string expectedResult = DataHelpers.SixtyFiveThousandCharactersResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.SixtyFiveThousandCharacters);
 
-            string newMinifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
+
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
-            Assert.That(newMinifiedHtml, Is.EqualTo(expectedResult));
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
         [Test]
         public void SixtyFiveKCharacters__WithoutArgs_ShouldMakeNoChange()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  
-            string filePath = Path.Combine(_testDataFolder, "Standard.txt");
             List<string> args = new List<string> { "pathToFiles" };
 
-            string expectedResult = ReadFileContents(Path.Combine(_testDataFolder, "StandardResult.txt"));
+            string expectedResult = DataHelpers.SixtyFiveThousandCharactersNoBreakResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(this.ReadFileContents(filePath));
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.SixtyFiveThousandCharacters);
 
-            string newMinifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
 
-            string reArranged = Program.ReArrangeModelDeclaration(newMinifiedHtml);
+            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
 
             // Assert
-            Assert.That(reArranged, Is.EqualTo(expectedResult));
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
         #region Helpers
