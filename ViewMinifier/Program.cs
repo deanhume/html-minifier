@@ -17,14 +17,18 @@
 
             IEnumerable<string> allDirectories = GetDirectories(folderPath);
 
-            // Loop through the files in the folder and look for *.cshtml & *.aspx
+            // Loop through the files in the folder and look for any of the following extensions
             foreach (string folder in allDirectories)
             {
                 string[] filePaths = Directory.GetFiles(folder);
 
                 foreach (var filePath in filePaths)
                 {
-                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm") || filePath.Contains(".ascx"))
+                    // Add a check to ensure lower case file namespace
+                    filePath = filePath.ToLower();
+
+                    // TODO: Add a test for master pages
+                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm") || filePath.Contains(".ascx") || filePath.Contains(".master"))
                     {
                         // Minify contents
                         string minifiedContents = ReadHtml(filePath, args);
@@ -156,6 +160,14 @@
             // Replace line comments
             htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
 
+            // Replace line comments without a space
+            // TODO: Needs a test
+            htmlContents = Regex.Replace(htmlContents, @"//(.*?)\r?\n", "", RegexOptions.Singleline);
+
+            // Replace JavaScript comments
+            // TODO: Needs a test
+            htmlContents = Regex.Replace(htmlContents, @"[^:|""|']//(.*?)\r?\n", "");
+
             // Replace spaces between quotes
             htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
 
@@ -168,7 +180,7 @@
             // Replace comments
             htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(.*?)-->", "");
 
-            // single-line doctype must be preserved 
+            // single-line doctype must be preserved
             var firstEndBracketPosition = htmlContents.IndexOf(">", StringComparison.Ordinal);
             if (firstEndBracketPosition >= 0)
             {
