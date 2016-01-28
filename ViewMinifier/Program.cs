@@ -24,11 +24,8 @@
 
                 foreach (var filePath in filePaths)
                 {
-                    // Add a check to ensure lower case file namespace
-                    filePath = filePath.ToLower();
-
                     // TODO: Add a test for master pages
-                    if (filePath.Contains(".cshtml") || filePath.Contains(".vbhtml") || filePath.Contains(".aspx") || filePath.Contains(".html") || filePath.Contains(".htm") || filePath.Contains(".ascx") || filePath.Contains(".master"))
+                    if (filePath.ToLower().Contains(".cshtml") || filePath.ToLower().Contains(".vbhtml") || filePath.ToLower().Contains(".aspx") || filePath.ToLower().Contains(".html") || filePath.ToLower().Contains(".htm") || filePath.ToLower().Contains(".ascx") || filePath.ToLower().Contains(".master"))
                     {
                         // Minify contents
                         string minifiedContents = ReadHtml(filePath, args);
@@ -157,16 +154,14 @@
         /// </returns>
         public static string MinifyHtml(string htmlContents)
         {
+            // First, remove all JavaScript comments
+            htmlContents = RemoveJavaScriptComments(htmlContents);
+
+            // Minify the string
+            htmlContents = Regex.Replace(htmlContents, @"/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/", "");
+
             // Replace line comments
             htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
-
-            // Replace line comments without a space
-            // TODO: Needs a test
-            htmlContents = Regex.Replace(htmlContents, @"//(.*?)\r?\n", "", RegexOptions.Singleline);
-
-            // Replace JavaScript comments
-            // TODO: Needs a test
-            htmlContents = Regex.Replace(htmlContents, @"[^:|""|']//(.*?)\r?\n", "");
 
             // Replace spaces between quotes
             htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
@@ -189,6 +184,28 @@
             }
 
             return htmlContents.Trim();
+        }
+
+        /// <summary>
+        /// Removes any JavaScript Comments in a script block
+        /// </summary>
+        /// <param name="javaScriptComments"></param>
+        /// <returns>A string with all JS comments removed</returns>
+        public static string RemoveJavaScriptComments(string javaScriptComments)
+        {
+            // Remove JavaScript comments
+            Regex extractScripts = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+
+            // Loop through the script blocks
+            foreach (Match match in extractScripts.Matches(javaScriptComments))
+            {
+                var scriptBlock = match.Value;
+
+                javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|']//(.*?)\r?\n", ""));
+
+            }
+
+            return javaScriptComments;
         }
 
         /// <summary>

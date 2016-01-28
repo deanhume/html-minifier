@@ -153,6 +153,32 @@
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
+        [Test]
+        public void RemoveJavaScriptComments_WithStandardText_ShouldReturnCorrectly()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.JavaScriptCommentsResult;
+
+            // Act
+            string removedComments = Program.RemoveJavaScriptComments(DataHelpers.JavaScriptComments);
+
+            // Assert
+            Assert.That(removedComments, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void RemoveMultipleJavaScriptComments_WithStandardText_ShouldReturnCorrectly()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.MultipleJavaScriptCommentsResult;
+
+            // Act
+            string removedComments = Program.RemoveJavaScriptComments(DataHelpers.MultipleJavaScriptComments);
+
+            // Assert
+            Assert.That(removedComments, Is.EqualTo(expectedResult));
+        }
+
         #region Helpers
 
         public string ReadFileContents(string filePath)
