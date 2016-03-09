@@ -101,42 +101,92 @@
                 contents = EnsureMaxLength(contents, args);
 
                 // Re-add the @model declaration
-                contents = ReArrangeModelDeclaration(contents);
+                contents = ReArrangeDeclarations(contents);
             }
 
             return contents;
         }
 
         /// <summary>
-        /// Re-arranges the razor syntax with the @model declaration on its
-        /// own line. It seems to break the razor engine if this isnt on
-        /// it's own line.
+        /// Find any occurences of the particular Razor keywords 
+        /// and add a new line or move to the top of the view.
         /// </summary>
-        /// <param name="fileContents">The file contents.</param>
+        /// <param name="fileContents">The contents of the file</param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
-        public static string ReArrangeModelDeclaration(string fileContents)
-        {
-            int modelPosition = fileContents.IndexOf("@model ");
+        public static string ReArrangeDeclarations(string fileContents)
+        {   
+            // A list of all the declarations
+            Dictionary<string, bool> declarations = new Dictionary<string, bool>();
+            declarations.Add("@model ", true);
+            declarations.Add("@using ", false);
+            declarations.Add("@inherits ", false);
 
-            int position = 7;
-            while (modelPosition >= 0)
+            // Loop through the declarations
+            foreach (var declaration in declarations)
             {
-                // move one forward
-                position += 1;
-                string substring = fileContents.Substring(modelPosition, position);
+                fileContents = ReArrangeDeclaration(fileContents, declaration.Key, declaration.Value);
+            }
 
-                // check if it contains a whitespace at the end
-                if (substring.EndsWith(" ") || substring.EndsWith(">"))
+            return fileContents;
+        }
+
+        /// <summary>
+        /// Re-arranges the razor syntax on its own line.
+        /// It seems to break the razor engine if this isnt on
+        /// it's own line in certain cases.
+        /// </summary>
+        /// <param name="fileContents">The file contents.</param>
+        /// <param name="declaration">The declaration keywords that will cause a new line split.</param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        private static string ReArrangeDeclaration(string fileContents, string declaration, bool bringToTop)
+        {
+            // Find possible multiple occurences in the file contents
+            MatchCollection matches = Regex.Matches(fileContents, declaration);
+
+            // Loop through the matches
+            bool alreadyMatched = false;
+            foreach (Match match in matches)
+            {
+                int position = declaration.Length;
+                int declarationPosition = match.Index;
+
+                // If we have more than one match, we need to keep the counter moving everytime we add a new line
+                if (matches.Count > 1 && alreadyMatched)
                 {
-                    // first replace the occurence
-                    fileContents = fileContents.Replace(substring, "");
+                    // Cos we added a new line break \n\r
+                    declarationPosition += 2;
+                }
 
-                    // Next move it to the top on its own line
-                    fileContents = substring + Environment.NewLine + fileContents;
+                while (declarationPosition >= 0)
+                {
+                    // Move one forward
+                    position += 1;
+                    string substring = fileContents.Substring(declarationPosition, position);
 
-                    return fileContents;
+                    // Check if it contains a whitespace at the end
+                    if (substring.EndsWith(" ") || substring.EndsWith(">"))
+                    {
+                        if (bringToTop)
+                        {
+                            // First replace the occurence
+                            fileContents = fileContents.Replace(substring, "");
+
+                            // Next move it to the top on its own line
+                            fileContents = substring + Environment.NewLine + fileContents;
+                            break;
+                        }
+                        else
+                        {
+                            // Add a line break afterwards
+                            fileContents = fileContents.Replace(substring, substring + Environment.NewLine);
+                            alreadyMatched = true;
+                            break;
+                        }
+                    }
                 }
             }
 

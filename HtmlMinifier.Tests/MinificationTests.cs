@@ -23,7 +23,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -40,7 +40,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -57,7 +57,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -74,7 +74,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -92,7 +92,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -109,7 +109,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -128,7 +128,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -147,7 +147,7 @@
 
             minifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
 
-            minifiedHtml = Program.ReArrangeModelDeclaration(minifiedHtml);
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -177,6 +177,40 @@
 
             // Assert
             Assert.That(removedComments, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void GithubIssue19Inherits__ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19     
+            string expectedResult = DataHelpers.GithubIssue19InheritsResult;
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue19Inherits);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void GithubIssue19Multiple__ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19     
+            string expectedResult = DataHelpers.GithubIssue19MultipleResult;
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue19Multiple);
+
+            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
+
+            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
         #region Helpers
