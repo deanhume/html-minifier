@@ -148,17 +148,17 @@
             MatchCollection matches = Regex.Matches(fileContents, declaration);
 
             // Loop through the matches
-            bool alreadyMatched = false;
+            int alreadyMatched = 0;
             foreach (Match match in matches)
             {
                 int position = declaration.Length;
                 int declarationPosition = match.Index;
 
                 // If we have more than one match, we need to keep the counter moving everytime we add a new line
-                if (matches.Count > 1 && alreadyMatched)
+                if (matches.Count > 1 && alreadyMatched > 0)
                 {
-                    // Cos we added a new line break \n\r
-                    declarationPosition += 2;
+                    // Cos we added one or more new line break \n\r
+                    declarationPosition += (2 * alreadyMatched);
                 }
 
                 while (declarationPosition >= 0)
@@ -183,7 +183,7 @@
                         {
                             // Add a line break afterwards
                             fileContents = fileContents.Replace(substring, substring + Environment.NewLine);
-                            alreadyMatched = true;
+                            alreadyMatched++;
                             break;
                         }
                     }
