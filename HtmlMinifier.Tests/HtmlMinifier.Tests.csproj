@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentsTests.cs" />
     <Compile Include="DataHelpers.cs" />
     <Compile Include="MinificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

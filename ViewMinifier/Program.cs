@@ -11,11 +11,16 @@
     /// </summary>
     public class Program
     {
+        private static Features _features = new Features();
+
         static void Main(string[] args)
         {
             string folderPath = GetFolderpath(args);
 
             IEnumerable<string> allDirectories = GetDirectories(folderPath);
+
+            // Determine which features to enable or disable
+            _features = FindValuesInArgs(args);
 
             // Loop through the files in the folder and look for any of the following extensions
             foreach (string folder in allDirectories)
@@ -24,7 +29,6 @@
 
                 foreach (var filePath in filePaths)
                 {
-                    // TODO: Add a test for master pages
                     if (filePath.ToLower().Contains(".cshtml") || filePath.ToLower().Contains(".vbhtml") || filePath.ToLower().Contains(".aspx") || filePath.ToLower().Contains(".html") || filePath.ToLower().Contains(".htm") || filePath.ToLower().Contains(".ascx") || filePath.ToLower().Contains(".master"))
                     {
                         // Minify contents
@@ -205,7 +209,10 @@
         public static string MinifyHtml(string htmlContents)
         {
             // First, remove all JavaScript comments
-            htmlContents = RemoveJavaScriptComments(htmlContents);
+            if (!_features.IgnoreJsComments)
+            {
+                htmlContents = RemoveJavaScriptComments(htmlContents);
+            }
 
             // Minify the string
             htmlContents = Regex.Replace(htmlContents, @"/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/", "");
@@ -223,7 +230,10 @@
             htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
 
             // Replace comments
-            htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(.*?)-->", "");
+            if (!_features.IgnoreHtmlComments)
+            {
+                htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(.*?)-->", "");
+            }
 
             // single-line doctype must be preserved
             var firstEndBracketPosition = htmlContents.IndexOf(">", StringComparison.Ordinal);
@@ -291,6 +301,28 @@
             }
 
             return htmlContents;
+        }
+
+        /// <summary>
+        /// Check the arguments passed in to determine if we should enable or disable any features.
+        /// </summary>
+        /// <param name="args">The arguments passed in.</param>
+        /// <returns>A list of features to be enabled or disabled.</returns>
+        public static Features FindValuesInArgs(string[] args)
+        {
+            _features = new Features();
+
+            if (args.Contains("ignorehtmlcomments"))
+            {
+                _features.IgnoreHtmlComments = true;
+            }
+
+            if (args.Contains("ignorejscomments"))
+            {
+                _features.IgnoreJsComments = true;
+            }
+
+            return _features;
         }
     }
 }
