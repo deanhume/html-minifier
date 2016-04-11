@@ -11,7 +11,7 @@
     /// </summary>
     public class Program
     {
-        private static Features _features = new Features();
+        public static Features _features = new Features();
 
         static void Main(string[] args)
         {

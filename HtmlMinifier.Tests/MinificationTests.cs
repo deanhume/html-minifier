@@ -213,6 +213,20 @@
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
+        [Test]
+        public void GithubIssue23__ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/23  
+            string expectedResult = DataHelpers.GithubIssue23Result;
+            Program._features.IgnoreHtmlComments = true;
+
+            // Act
+            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue23);
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
         #region Helpers
 
         public string ReadFileContents(string filePath)
