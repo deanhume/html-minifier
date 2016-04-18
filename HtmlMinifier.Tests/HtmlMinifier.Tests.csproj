@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ArgumentsTests.cs" />
     <Compile Include="DataHelpers.cs" />
+    <Compile Include="FileExtensionTests.cs" />
     <Compile Include="MinificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
