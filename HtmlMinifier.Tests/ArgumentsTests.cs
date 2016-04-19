@@ -15,7 +15,7 @@ namespace HtmlMinifier.Tests
             argsList.Add("ignorejscomments");
 
             // Act
-            Features disabledFeatures = Program.FindValuesInArgs(argsList.ToArray());
+            Features disabledFeatures = new Features(argsList.ToArray());
 
             // Assert
             Assert.That(disabledFeatures.IgnoreHtmlComments, Is.True);
@@ -30,7 +30,7 @@ namespace HtmlMinifier.Tests
             argsList.Add("ignorehtmlcomments");
 
             // Act
-            Features disabledFeatures = Program.FindValuesInArgs(argsList.ToArray());
+            Features disabledFeatures = new Features(argsList.ToArray());
 
             // Assert
             Assert.That(disabledFeatures.IgnoreHtmlComments, Is.True);

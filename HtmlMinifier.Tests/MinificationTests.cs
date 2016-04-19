@@ -11,6 +11,8 @@
     public class MinificationTests
     {
         readonly string _testDataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\Data");
+        readonly Features noFeatures = new Features(new List<string>().ToArray());
+
 
         [Test]
         public void ReadHtml_WithStandardText_ShouldReturnCorrectly()
@@ -19,11 +21,7 @@
             string expectedResult = DataHelpers.StandardResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.Standard);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.Standard, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -36,11 +34,7 @@
             string expectedResult = DataHelpers.CommentsResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.Comments);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.Comments, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -53,11 +47,7 @@
             string expectedResult = DataHelpers.ModelListResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.ModelList);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.ModelList, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -70,11 +60,7 @@
             string expectedResult = DataHelpers.LanguageSpecificCharactersResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.LanguageSpecificCharacters);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.LanguageSpecificCharacters, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -88,11 +74,7 @@
             string expectedResult = DataHelpers.GithubIssue10Result;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue10);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue10, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -105,11 +87,7 @@
             string expectedResult = DataHelpers.GithubIssue13Result;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue13);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue13, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -124,11 +102,7 @@
             string expectedResult = DataHelpers.SixtyFiveThousandCharactersResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.SixtyFiveThousandCharacters);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.SixtyFiveThousandCharacters, new Features(args.ToArray()));
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -143,11 +117,7 @@
             string expectedResult = DataHelpers.SixtyFiveThousandCharactersNoBreakResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.SixtyFiveThousandCharacters);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, args.ToArray());
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.SixtyFiveThousandCharacters, new Features(args.ToArray()));
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -160,7 +130,7 @@
             string expectedResult = DataHelpers.JavaScriptCommentsResult;
 
             // Act
-            string removedComments = Program.RemoveJavaScriptComments(DataHelpers.JavaScriptComments);
+            string removedComments = StreamReaderExtension.RemoveJavaScriptComments(DataHelpers.JavaScriptComments);
 
             // Assert
             Assert.That(removedComments, Is.EqualTo(expectedResult));
@@ -173,7 +143,7 @@
             string expectedResult = DataHelpers.MultipleJavaScriptCommentsResult;
 
             // Act
-            string removedComments = Program.RemoveJavaScriptComments(DataHelpers.MultipleJavaScriptComments);
+            string removedComments = StreamReaderExtension.RemoveJavaScriptComments(DataHelpers.MultipleJavaScriptComments);
 
             // Assert
             Assert.That(removedComments, Is.EqualTo(expectedResult));
@@ -186,11 +156,7 @@
             string expectedResult = DataHelpers.GithubIssue19InheritsResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue19Inherits);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue19Inherits, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -203,11 +169,7 @@
             string expectedResult = DataHelpers.GithubIssue19MultipleResult;
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue19Multiple);
-
-            minifiedHtml = Program.EnsureMaxLength(minifiedHtml, null);
-
-            minifiedHtml = Program.ReArrangeDeclarations(minifiedHtml);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue19Multiple, noFeatures);
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
@@ -218,28 +180,15 @@
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/23  
             string expectedResult = DataHelpers.GithubIssue23Result;
-            Program._features.IgnoreHtmlComments = true;
+            // test IgnoreHtmlComments
+            List<string> args = new List<string> { "ignorehtmlcomments" };
 
             // Act
-            string minifiedHtml = Program.MinifyHtml(DataHelpers.GithubIssue23);
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue23, new Features(args.ToArray()));
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
-        #region Helpers
-
-        public string ReadFileContents(string filePath)
-        {
-            string result;
-            using (var reader = new StreamReader(filePath))
-            {
-                result = reader.ReadToEnd();
-            }
-
-            return result;
-        }
-
-        #endregion
     }
 }
