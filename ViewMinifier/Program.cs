@@ -39,6 +39,7 @@
                     }
                 }
             }
+
             Console.WriteLine("Minification Complete");
         }
 

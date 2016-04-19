@@ -7,14 +7,27 @@ namespace HtmlMinifier
 {
     public static class StreamReaderExtension
     {
+        /// <summary>
+        /// Minify the HTML code
+        /// </summary>
+        /// <param name="reader">The StreamReader.</param>
+        /// <param name="features">Any features to enable / disable.</param>
+        /// <returns>The minified HTML code.</returns>
         public static string MinifyHtmlCode(this StreamReader reader, Features features)
         {
             return MinifyHtmlCode(reader.ReadToEnd(), features);
         }
 
+        /// <summary>
+        /// Minifies the HTML code
+        /// </summary>
+        /// <param name="htmlCode">The HTML as a string</param>
+        /// <param name="features">Any features to enable / disable.</param>
+        /// <returns>The minified HTML code.</returns>
         public static string MinifyHtmlCode(string htmlCode, Features features)
         {
             string contents;
+
             // Minify the contents
             contents = MinifyHtml(htmlCode, features);
 
@@ -23,6 +36,7 @@ namespace HtmlMinifier
 
             // Re-add the @model declaration
             contents = ReArrangeDeclarations(contents);
+
             return contents;
         }
 

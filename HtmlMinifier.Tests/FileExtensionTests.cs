@@ -7,7 +7,7 @@ namespace HtmlMinifier.Tests
     public class FileExtensionTests
     {
         [Test]
-        public void GithubIssue25__ShouldReturnCorrectly()
+        public void GithubIssue25_ShouldReturnCorrectly()
         {                        
             Assert.That("test.html".IsHtmlFile(), Is.True);
             Assert.That("codes.js.aspx".IsHtmlFile(), Is.True);
