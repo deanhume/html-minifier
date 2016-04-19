@@ -22,13 +22,21 @@ To HTML that looks like this:
 
 ## Usage Examples
 
-In order to use from the command line, you simply pass through a folder path that contains all your images. The minifier will process all images in the root and subfolders.
+In order to use from the command line, you simply pass through a folder path that contains all of the files you want to minify. The minifier will process all images in the root and subfolders.
 
-    C:\>HtmlMinifier.exe "C:\ImagesFolder"
+    C:\>HtmlMinifier.exe "C:\Folder"
 
 If you'd like to restrict the number of characters per line and force it to break to the next line, use the minifier with the following optional value (where the number is the max character count).
 
-    C:\>HtmlMinifier.exe "C:\ImagesFolder" "60000"
+    C:\>HtmlMinifier.exe "C:\Folder" "60000"
+
+There is also the option to disable certain minification features. For example, if you use a you rely on HTML comments (Knockout, Angular, etc.) you might want to leave them in the minified HTML.
+
+    C:\>HtmlMinifier.exe "C:\Folder" ignorehtmlcomments
+
+You can also disable the minification of JavaScript Comments
+
+    C:\>HtmlMinifier.exe "C:\Folder" ignorejscomments
 
 If you'd like to find out how to use this with MSBUILD and your next publish, please follow this [link.](http://deanhume.com/Home/BlogPost/a-simple-html-minifier-for-asp-net/2097)
 

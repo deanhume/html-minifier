@@ -30,6 +30,8 @@
                 {
                     if (filePath.IsHtmlFile())
                     {
+                        Console.WriteLine("Beginning Minification");
+
                         // Minify contents
                         string minifiedContents = MinifyHtml(filePath, features);
 
