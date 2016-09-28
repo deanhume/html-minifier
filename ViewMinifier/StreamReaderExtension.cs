@@ -156,11 +156,17 @@ namespace HtmlMinifier
 
             // Replace spaces between brackets
             htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
-
             // Replace comments
             if (!features.IgnoreHtmlComments)
             {
-                htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(.*?)-->", "");
+                if (features.IgnoreKnockoutComments)
+                {
+                    htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(?!ko .*)(?!\/ko)(.*?)-->", "");
+                }
+                else
+                {
+                    htmlContents = Regex.Replace(htmlContents, @"<!--(?!\[)(.*?)-->", "");
+                }
             }
 
             // single-line doctype must be preserved
