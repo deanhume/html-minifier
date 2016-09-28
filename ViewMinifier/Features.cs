@@ -20,6 +20,11 @@ namespace HtmlMinifier
                 IgnoreJsComments = true;
             }
 
+            if (args.Contains("ignoreknockoutcomments"))
+            {
+                IgnoreKnockoutComments = true;
+            }
+
             int maxLength = 0;
 
             // This is a check to see if the args contain an optional parameter for the max line length
@@ -41,6 +46,11 @@ namespace HtmlMinifier
         /// Should we ignore the html comments and not minify?
         /// </summary>
         public bool IgnoreHtmlComments { get; private set; }
+
+        /// <summary>
+        /// Should we ignore knockout comments?
+        /// </summary>
+        public bool IgnoreKnockoutComments { get; set; }
 
         /// <summary>
         /// Property for the max character count
