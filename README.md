@@ -38,13 +38,13 @@ You can also disable the minification of JavaScript Comments
 
     C:\>HtmlMinifier.exe "C:\Folder" ignorejscomments
 
+If you use knockoutJS, you can optionally disable the minification of [Knockout](http://knockoutjs.com/) Comments
+
+    C:\>HtmlMinifier.exe "C:\Folder" ignoreknockoutcomments
+    
 If you'd like to find out how to use this with MSBUILD and your next publish, please follow this [link.](http://deanhume.com/Home/BlogPost/a-simple-html-minifier-for-asp-net/2097)
-
-## Maintainers
-
-* [@deanohume](http://github.com/deanhume)
 
 ## License
 
-(C) Dean Hume 2014, released under the MIT license
+(C) Dean Hume 2016, released under the MIT license
 
