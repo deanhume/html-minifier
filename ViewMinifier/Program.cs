@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Text.RegularExpressions;
 
     /// <summary>
@@ -36,7 +37,9 @@
                         string minifiedContents = MinifyHtml(filePath, features);
 
                         // Write to the same file
-                        File.WriteAllText(filePath, minifiedContents);
+
+                        https://github.com/deanhume/html-minifier.git
+                        File.WriteAllText(filePath, minifiedContents, Encoding.UTF8);
                         Console.WriteLine("Minified file : " + filePath);
                     }
                 }
