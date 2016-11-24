@@ -37,8 +37,6 @@
                         string minifiedContents = MinifyHtml(filePath, features);
 
                         // Write to the same file
-
-                        https://github.com/deanhume/html-minifier.git
                         File.WriteAllText(filePath, minifiedContents, Encoding.UTF8);
                         Console.WriteLine("Minified file : " + filePath);
                     }
