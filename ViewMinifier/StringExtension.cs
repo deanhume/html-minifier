@@ -18,7 +18,8 @@
                     file.EndsWith(".html") ||
                     file.EndsWith(".htm") ||
                     file.EndsWith(".ascx") ||
-                    file.EndsWith(".master");
+                    file.EndsWith(".master") ||
+                    file.EndsWith(".inc");
         }
     }
 }
