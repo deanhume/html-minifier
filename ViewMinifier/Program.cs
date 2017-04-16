@@ -1,12 +1,11 @@
-﻿namespace HtmlMinifier
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 
+namespace HtmlMinifier
+{
     /// <summary>
     /// The html minification class.
     /// </summary>
@@ -15,35 +14,63 @@
 
         static void Main(string[] args)
         {
-            string folderPath = GetFolderpath(args);
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Please provide folder path or file(s) to process");
+            }
+            else
+            {
+                // Determine which features to enable or disable
+                var features = new Features(args);
+                foreach (var arg in args)
+                {
+                    if (Directory.Exists(arg))
+                    {
+                        ProcessDirectory(features, arg);
+                    }
+                    else if (File.Exists(arg))
+                    {
+                        ProcessFile(features, arg);
+                    }
+                }
+                Console.WriteLine("Minification Complete");
+            }
+        }
 
-            IEnumerable<string> allDirectories = GetDirectories(folderPath);
-
-            // Determine which features to enable or disable
-            var features = new Features(args);
-
+        /// <summary>
+        /// Minify all files in a given file
+        /// </summary>
+        /// <param name="features">Features object</param>
+        /// <param name="folderPath">The path to the folder</param>
+        public static void ProcessDirectory(Features features, string folderPath)
+        {
             // Loop through the files in the folder and look for any of the following extensions
-            foreach (string folder in allDirectories)
+            foreach (string folder in GetDirectories(folderPath))
             {
                 string[] filePaths = Directory.GetFiles(folder);
-
                 foreach (var filePath in filePaths)
                 {
                     if (filePath.IsHtmlFile())
-                    {
-                        Console.WriteLine("Beginning Minification");
-
-                        // Minify contents
-                        string minifiedContents = MinifyHtml(filePath, features);
-
-                        // Write to the same file
-                        File.WriteAllText(filePath, minifiedContents, Encoding.UTF8);
-                        Console.WriteLine("Minified file : " + filePath);
-                    }
+                        ProcessFile(features, filePath);
                 }
             }
+        }
 
-            Console.WriteLine("Minification Complete");
+        /// <summary>
+        /// Minify a given file
+        /// </summary>
+        /// <param name="features">Features object</param>
+        /// <param name="filePath">The path to the file</param>
+        public static void ProcessFile(Features features, string filePath)
+        {
+            Console.WriteLine("Beginning Minification");
+
+            // Minify contents
+            string minifiedContents = MinifyHtml(filePath, features);
+
+            // Write to the same file
+            File.WriteAllText(filePath, minifiedContents, Encoding.UTF8);
+            Console.WriteLine("Minified file : " + filePath);
         }
 
         /// <summary>
@@ -66,25 +93,6 @@
         }
 
         /// <summary>
-        /// Get the folder path
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns>A string with the folder path</returns>
-        private static string GetFolderpath(string[] args)
-        {
-            // Check that the folder path is provided
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Please provide the folder path");
-
-                Environment.Exit(0);
-            }
-
-            // Return the folder path
-            return args[0];
-        }
-
-        /// <summary>
         /// Minifies the contents of the given view.
         /// </summary>
         /// <param name="filePath"> The file path. </param>
@@ -95,7 +103,7 @@
         {
             using (var reader = new StreamReader(filePath))
             {
-                return reader.MinifyHtmlCode(features);                
+                return reader.MinifyHtmlCode(features);
             }
         }
     }
