@@ -57,8 +57,28 @@
 
         public static string GithubIssue23Result = "<!--ko if: someExpressionGoesHere --><li> I want to make this item present/absent dynamically</li><!-- /ko -->";
 
+        public static string GithubIssue36 = @"<div id='foo'>
+	<div class='foo'>
+		<i class='foo'></i>
+		<input id='file' name='file' type='file' accept='image/*' class='foo' autocomplete='off' />
+
+		<span id='foo' class='foo'>
+		
+		</span>
+
+		<div id='foo' class='foo'>
+			
+		</div>
+	</div>
+	<div id='foo' class='foo'>
+		<i class='foo'></i>
+	</div>
+</div>";
+        public static string GithubIssue36Result = "<div id='foo'><div class='foo'><i class='foo'></i><input id='file' name='file' type='file' accept='image/*' class='foo' autocomplete='off' /><span id='foo' class='foo'></span><div id='foo' class='foo'></div></div><div id='foo' class='foo'><i class='foo'></i></div></div>";
+
         public static string WithIncludeVirtuals = "<!DOCTYPE html>\r\n<!--[if lt IE 7 ]><html class=\"ie ie6\" lang=\"en\"> <![endif]-->\r\n<!--[if IE 7 ]><html class=\"ie ie7\" lang=\"en\"> <![endif]-->\r\n<!--[if IE 8 ]><html class=\"ie ie8\" lang=\"en\"> <![endif]-->\r\n<!--[if (gte IE 9)|!(IE)]>\r\n<html lang=\"en\">\r\n<![endif]-->\r\n\r\n\r\n     <!--[if lt IE 9]>\r\n        <script src=\"http://c512928.r28.cf3.rackcdn.com/html5.js\"></script>\r\n    <![endif]-->\r\n\r\n\t@if (foo) {\r\n\t  <text>Plain Text</text> \r\n\t}\r\n\r\n\r\n\t@*\r\n\tThis is a server side \r\n\tmultiline comment \r\n\t*@\r\n\r\n    <script type=\"text/javascript\">\r\n\t\t// Testing javascript comments\r\n\t\t w._gaq = w._gaq || [];\r\n            w._gaq.push(['_setAccount', 'UA-11951201-1'], ['_trackPageview'], ['_setSiteSpeedSampleRate', 75]);\r\n    </script>\r\n    \r\n</body>\r\n<!-- This content will be removed--><!-- #include virtual=\"~somein.inc\" --></br><!--#include virtual=\"~somein.inc\" --></html>\r\n\r\n";
 
         public static string WithIncludeVirtualsResult = "<!DOCTYPE html><!--[if lt IE 7 ]><html class=\"ie ie6\" lang=\"en\"><![endif]--><!--[if IE 7 ]><html class=\"ie ie7\" lang=\"en\"><![endif]--><!--[if IE 8 ]><html class=\"ie ie8\" lang=\"en\"><![endif]--><!--[if (gte IE 9)|!(IE)]><html lang=\"en\"><![endif]--><!--[if lt IE 9]><script src=\"http://c512928.r28.cf3.rackcdn.com/html5.js\"></script><![endif]--> @if (foo) { <text>Plain Text</text> } @* This is a server side multiline comment *@ <script type=\"text/javascript\"> w._gaq = w._gaq || []; w._gaq.push(['_setAccount', 'UA-11951201-1'], ['_trackPageview'], ['_setSiteSpeedSampleRate', 75]); </script></body><!-- #include virtual=\"~somein.inc\" --></br><!--#include virtual=\"~somein.inc\" --></html>";
+
     }
 }
