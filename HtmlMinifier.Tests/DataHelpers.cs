@@ -74,6 +74,6 @@
 		<i class='foo'></i>
 	</div>
 </div>";
-        public static string GithubIssue36Result = "TODO";
+        public static string GithubIssue36Result = "<div id='foo'><div class='foo'><i class='foo'></i><input id='file' name='file' type='file' accept='image/*' class='foo' autocomplete='off' /><span id='foo' class='foo'></span><div id='foo' class='foo'></div></div><div id='foo' class='foo'><i class='foo'></i></div></div>";
     }
 }

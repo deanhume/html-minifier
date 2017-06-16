@@ -41,7 +41,7 @@ namespace HtmlMinifier
         }
 
         /// <summary>
-        /// Find any occurences of the particular Razor keywords 
+        /// Find any occurences of the particular Razor keywords
         /// and add a new line or move to the top of the view.
         /// </summary>
         /// <param name="fileContents">The contents of the file</param>
@@ -142,6 +142,9 @@ namespace HtmlMinifier
                 htmlContents = RemoveJavaScriptComments(htmlContents);
             }
 
+            // Remove special keys
+            htmlContents = htmlContents.Replace("/*", "{{{SLASH_STAR}}}");
+
             // Minify the string
             htmlContents = Regex.Replace(htmlContents, @"/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/", "");
 
@@ -177,6 +180,8 @@ namespace HtmlMinifier
                 htmlContents = htmlContents.Insert(firstEndBracketPosition, ">");
             }
 
+            // Put back special keys
+            htmlContents = htmlContents.Replace("{{{SLASH_STAR}}}", "/*");
             return htmlContents.Trim();
         }
 
