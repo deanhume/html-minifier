@@ -201,5 +201,17 @@
             Assert.That(minifiedHtml, Is.EqualTo(DataHelpers.GithubIssue36Result));
         }
 
+        [Test]
+        public void RemoveMultipleHtmlComments_WithIncludeVirtuals_ShouldReturnCorrectly()
+        {
+            string expectedResult = DataHelpers.WithIncludeVirtualsResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.WithIncludeVirtuals, noFeatures);
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
     }
 }
