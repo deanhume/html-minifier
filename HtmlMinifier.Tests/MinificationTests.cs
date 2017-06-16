@@ -69,7 +69,7 @@
         [Test]
         public void GithubIssue10_ShouldReturnCorrectly()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/10                  
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/10
             // Arrange
             string expectedResult = DataHelpers.GithubIssue10Result;
 
@@ -83,7 +83,7 @@
         [Test]
         public void GithubIssue13_ShouldReturnCorrectly()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/13                  
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/13
             string expectedResult = DataHelpers.GithubIssue13Result;
 
             // Act
@@ -96,7 +96,7 @@
         [Test]
         public void SixtyFiveKCharacters_ShouldBreakToNextLine()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14
             List<string> args = new List<string> {"pathToFiles", "60000"};
 
             string expectedResult = DataHelpers.SixtyFiveThousandCharactersResult;
@@ -111,7 +111,7 @@
         [Test]
         public void SixtyFiveKCharacters_WithoutArgs_ShouldMakeNoChange()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14                  
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14
             List<string> args = new List<string> { "pathToFiles" };
 
             string expectedResult = DataHelpers.SixtyFiveThousandCharactersNoBreakResult;
@@ -152,7 +152,7 @@
         [Test]
         public void GithubIssue19Inherits_ShouldReturnCorrectly()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19     
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19
             string expectedResult = DataHelpers.GithubIssue19InheritsResult;
 
             // Act
@@ -165,7 +165,7 @@
         [Test]
         public void GithubIssue19Multiple_ShouldReturnCorrectly()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19     
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19
             string expectedResult = DataHelpers.GithubIssue19MultipleResult;
 
             // Act
@@ -178,7 +178,7 @@
         [Test]
         public void GithubIssue23_ShouldReturnCorrectly()
         {
-            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/23  
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/23
             string expectedResult = DataHelpers.GithubIssue23Result;
 
             // test IgnoreHtmlComments
@@ -189,6 +189,16 @@
 
             // Assert
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void GithubIssue36_ShouldReturnCorrectly()
+        {
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue36, noFeatures);
+
+            // Assert
+            Assert.That(minifiedHtml, Is.EqualTo(DataHelpers.GithubIssue36Result));
         }
 
     }

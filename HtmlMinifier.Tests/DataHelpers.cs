@@ -56,5 +56,24 @@
         public static string GithubIssue23 = "<!--ko if: someExpressionGoesHere -->\r\n<li> I want to make this item present/absent dynamically</li>\r\n<!-- /ko -->";
 
         public static string GithubIssue23Result = "<!--ko if: someExpressionGoesHere --><li> I want to make this item present/absent dynamically</li><!-- /ko -->";
+
+        public static string GithubIssue36 = @"<div id='foo'>
+	<div class='foo'>
+		<i class='foo'></i>
+		<input id='file' name='file' type='file' accept='image/*' class='foo' autocomplete='off' />
+
+		<span id='foo' class='foo'>
+		
+		</span>
+
+		<div id='foo' class='foo'>
+			
+		</div>
+	</div>
+	<div id='foo' class='foo'>
+		<i class='foo'></i>
+	</div>
+</div>";
+        public static string GithubIssue36Result = "TODO";
     }
 }
