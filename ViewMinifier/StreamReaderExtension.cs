@@ -98,6 +98,7 @@ namespace HtmlMinifier
                 {
                     // Move one forward
                     position += 1;
+                    if (position > fileContents.Length) break;
                     string substring = fileContents.Substring(declarationPosition, position);
 
                     // Check if it contains a whitespace at the end
