@@ -213,5 +213,15 @@
             Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
 
+        [Test]
+        public void BadHTML_ShouldReturnCorrectly()
+        {
+            string badHtml = "@model .";
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(badHtml, noFeatures);
+
+            // Assert
+            Assert.That(badHtml, Is.EqualTo(badHtml));
+        }
     }
 }
