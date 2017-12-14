@@ -97,7 +97,7 @@
         public void SixtyFiveKCharacters_ShouldBreakToNextLine()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14
-            List<string> args = new List<string> {"pathToFiles", "60000"};
+            List<string> args = new List<string> { "pathToFiles", "60000" };
 
             string expectedResult = DataHelpers.SixtyFiveThousandCharactersResult;
 
@@ -222,6 +222,29 @@
 
             // Assert
             Assert.That(badHtml, Is.EqualTo(badHtml));
+        }
+
+        [Test]
+        public void ModelViewDoubleLessThanSign_ShouldTakenToTop()
+        {
+            string expectedResult = DataHelpers.TupleModelExpectedResult;
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.TupleModel, noFeatures);
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+
+        [Test]
+        public void TextLineAtSign_ShouldReplaceWithTextTags()
+        {
+            string expectedResult = DataHelpers.WithAtSignTextExpectedResult;
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.WithAtSignText, noFeatures);
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+        }
+        [Test]
+        public void CommentLineWithTripleSlash_ShouldBeRemoved()
+        {
+            string expectedResult = DataHelpers.CommentLineWithTripleSlashExpectedResult;
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.CommentLineWithTripleSlash, noFeatures);
+            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
         }
     }
 }

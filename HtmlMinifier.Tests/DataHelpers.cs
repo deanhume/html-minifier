@@ -1,4 +1,6 @@
-﻿namespace HtmlMinifier.Tests
+﻿using System;
+
+namespace HtmlMinifier.Tests
 {
     public static class DataHelpers
     {
@@ -80,5 +82,21 @@
 
         public static string WithIncludeVirtualsResult = "<!DOCTYPE html><!--[if lt IE 7 ]><html class=\"ie ie6\" lang=\"en\"><![endif]--><!--[if IE 7 ]><html class=\"ie ie7\" lang=\"en\"><![endif]--><!--[if IE 8 ]><html class=\"ie ie8\" lang=\"en\"><![endif]--><!--[if (gte IE 9)|!(IE)]><html lang=\"en\"><![endif]--><!--[if lt IE 9]><script src=\"http://c512928.r28.cf3.rackcdn.com/html5.js\"></script><![endif]--> @if (foo) { <text>Plain Text</text> } @* This is a server side multiline comment *@ <script type=\"text/javascript\"> w._gaq = w._gaq || []; w._gaq.push(['_setAccount', 'UA-11951201-1'], ['_trackPageview'], ['_setSiteSpeedSampleRate', 75]); </script></body><!-- #include virtual=\"~somein.inc\" --></br><!--#include virtual=\"~somein.inc\" --></html>";
 
+        public static string TupleModel =
+                "@using Arabam.Core.Dtos.Responses.Adverts @using Arabam.Core.Facades.Converters @using Arabam.Domain.Domains.Properties @using Arabam.Web.Helpers @model Tuple<AdvertDto, IList<MiniAdvertDto>>   <div class=\"bg-grey0\" ng-cloak>     <div class=\"container mt16 pt16 pb16\">         <div class=\"row mt16\">             <div class=\"col-xs-12\">                 <h3 class=\"mid-title bold tac\">Benzer İlanlar</h3>                 <div class=\"mt16\">                     <ul id=\"similar-adverts-slider\" class=\"detail-page-slider arabam-advert-slider\">                         <li>                             <div>                                 <a target=\"_self\" href=\"/\">                                     <img class=\"slide-img border-grey2\" src=\"path\">                                 </a>                                 <div>                                     <h4 class=\"crop-after  crop-after-40 mt8\">                                         <a target=\"_self\" href=\"Url\"><span ng-non-bindable>Title</span></a>                                     </h4>                                     <p class=\"mt8\">                                         <a class=\"bold\" target=\"_self\" href=\"path\">FormattedPrice</a>                                     </p>                                 </div>                             </div>                     </ul>                 </div>             </div>         </div>     </div> </div>"
+            ;
+
+        public static string TupleModelExpectedResult =
+                "@model Tuple<AdvertDto, IList<MiniAdvertDto>>\r\n@using Arabam.Core.Dtos.Responses.Adverts \r\n@using Arabam.Core.Facades.Converters \r\n@using Arabam.Domain.Domains.Properties \r\n@using Arabam.Web.Helpers \r\n<div class=\"bg-grey0\" ng-cloak><div class=\"container mt16 pt16 pb16\"><div class=\"row mt16\"><div class=\"col-xs-12\"><h3 class=\"mid-title bold tac\">Benzer İlanlar</h3><div class=\"mt16\"><ul id=\"similar-adverts-slider\" class=\"detail-page-slider arabam-advert-slider\"><li><div><a target=\"_self\" href=\"/\"><img class=\"slide-img border-grey2\" src=\"path\"></a><div><h4 class=\"crop-after crop-after-40 mt8\"><a target=\"_self\" href=\"Url\"><span ng-non-bindable>Title</span></a></h4><p class=\"mt8\"><a class=\"bold\" target=\"_self\" href=\"path\">FormattedPrice</a></p></div></div></ul></div></div></div></div></div>"
+            ;
+
+        public static string WithAtSignText= "@using Arabam.Core.Components.Constants @using Arabam.Core.Dtos.Responses.Adverts @using Arabam.Web.Helpers; @model IList<Arabam.Core.Dtos.Responses.TechnicalDetails.TechnicalDetailGroupDto>     <div class=\"vertically-centered-big mb8\">             <p class=\"font-default-plus semi-bold color-yellow8\">                 GroupName             </p>         </div>         @:class=\"column-grid2 column-gap50 GroupName\"         </div>";
+        public static string WithAtSignTextExpectedResult= "@model IList<Arabam.Core.Dtos.Responses.TechnicalDetails.TechnicalDetailGroupDto>\r\n@using Arabam.Core.Components.Constants \r\n@using Arabam.Core.Dtos.Responses.Adverts \r\n@using Arabam.Web.Helpers; \r\n<div class=\"vertically-centered-big mb8\"><p class=\"font-default-plus semi-bold color-yellow8\"> GroupName </p></div><text>class=\"column-grid2 column-gap50 GroupName\" </div></text>";
+
+        public static string CommentLineWithTripleSlash =
+                "<div class=\"vertically-centered-big mb8\">\"            <p class=\"font-default-plus semi-bold color-yellow8\">\"                GroupName\"            </p>\"        </div>\"        /// this is comment\"                <dl class=\"cf border-bottom-grey2 vertically-centered-big m0\">\"                    <dtclass=\"w50 fl color-grey5\">\"                        <span class=\"one-line-overflow\">@item.Name</span></dt>\"                    <dd class=\"w50 fl m0 color-grey6 semi-bold\"><span class=\"pl4 one-line-overflow\">@item.Value</span></dd>\"                </dl>\"        </div>"
+            ;
+
+        public static string CommentLineWithTripleSlashExpectedResult = "<div class=\"vertically-centered-big mb8\">\" <p class=\"font-default-plus semi-bold color-yellow8\">\" GroupName\" </p>\" </div>\"";
     }
 }
