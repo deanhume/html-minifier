@@ -132,7 +132,7 @@ namespace HtmlMinifier
         /// <summary>
         /// Minifies the given HTML string.
         /// </summary>
-        /// <param name="htmlContents"> The html to minify.</param>
+        /// <param name="htmlContents">The html to minify.</param>
         /// <param name="features">The features</param>
         /// <returns>
         /// The <see cref="string"/>.
@@ -168,6 +168,7 @@ namespace HtmlMinifier
 
             // Replace spaces between brackets
             htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
+            
             // Replace comments
             if (!features.IgnoreHtmlComments)
             {
@@ -194,6 +195,11 @@ namespace HtmlMinifier
             return htmlContents.Trim();
         }
 
+        /// <summary>
+        /// Replaces new comment lines (@:) in Razor with HTML text tag
+        /// </summary>
+        /// <param name="htmlContents">The html to minify</param>
+        /// <returns>A string with all comment lines replaced with text tags</returns>
         private static string ReplaceTextLine(string htmlContents)
         {
             var sb = new StringBuilder();
