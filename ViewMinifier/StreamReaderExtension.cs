@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace HtmlMinifier
@@ -102,7 +103,8 @@ namespace HtmlMinifier
                     string substring = fileContents.Substring(declarationPosition, position);
 
                     // Check if it contains a whitespace at the end
-                    if (substring.EndsWith(" ") || substring.EndsWith(">"))
+                    if (!substring.EndsWith(", ") && (substring.EndsWith(" ")
+                        || substring.EndsWith(">") && fileContents.Substring(declarationPosition + position - 1, 2) != ">>"))
                     {
                         if (bringToTop)
                         {
@@ -149,6 +151,12 @@ namespace HtmlMinifier
             // Minify the string
             htmlContents = Regex.Replace(htmlContents, @"/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/", "");
 
+            // ReplaceTextLine
+            htmlContents = ReplaceTextLine(htmlContents);
+
+            // Replace line comments
+            htmlContents = Regex.Replace(htmlContents, @"/// (.*?)\r?\n", "", RegexOptions.Singleline);
+
             // Replace line comments
             htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
 
@@ -184,6 +192,19 @@ namespace HtmlMinifier
             // Put back special keys
             htmlContents = htmlContents.Replace("{{{SLASH_STAR}}}", "/*");
             return htmlContents.Trim();
+        }
+
+        private static string ReplaceTextLine(string htmlContents)
+        {
+            var sb = new StringBuilder();
+            foreach (var line in Regex.Split(htmlContents, "\r\n"))
+            {
+                if (line.Contains("@:"))
+                    sb.AppendLine(line.Replace("@:", "<text>") + "</text>");
+                else
+                    sb.AppendLine(line);
+            }
+            return sb.ToString();
         }
 
         /// <summary>
