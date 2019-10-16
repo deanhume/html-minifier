@@ -105,5 +105,8 @@ namespace HtmlMinifier.Tests
 
         public static string Arabic = "@using System.Web.Optimization\r\n@model Test\r\n@section Styles\r\n{\r\n    @Styles.Render(\"~/Css/Profile\")\r\n}\r\n\r\n@Html.Partial(\"ProfilesMenu\")\r\n\r\n<div class=\"row\">\r\n    <div class=\"col-md-12\">\r\n        <div class=\"data-block\">\r\n            <span class=\"current-venue-header\" data-bind=\"text: currentVenue().VenueName\"></span>\r\n            <div class=\"btn-group\" data-bind=\"visible: currentVenue().VenueId() != null\">هذه هي بعض معلومات الاختبار            </div>\r\n        </div>\r\n\t</div>\r\n</div>";
         public static string ArabicResult = "@model Test \r\n@using System.Web.Optimization \r\n@section Styles { @Styles.Render(\"~/Css/Profile\") } @Html.Partial(\"ProfilesMenu\") <div class=\"row\"><div class=\"col-md-12\"><div class=\"data-block\"><span class=\"current-venue-header\" data-bind=\"text: currentVenue().VenueName\"></span><div class=\"btn-group\" data-bind=\"visible: currentVenue().VenueId() != null\">هذه هي بعض معلومات الاختبار </div></div></div></div>";
+
+        public static string GithubIssue44 = "<h4> <i class=\"fa fa-play-circle-o\"> </i>Xem gì hôm nay?</h4>";
+        public static string GithubIssue44Result = "<h4><i class=\"fa fa-play-circle-o\"></i>Xem gì hôm nay?</h4>";
     }
 }

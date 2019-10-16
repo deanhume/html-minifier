@@ -69,7 +69,7 @@ namespace HtmlMinifier
             string minifiedContents = MinifyHtml(filePath, features);
 
             // Write to the same file
-            File.WriteAllText(filePath, minifiedContents, Encoding.UTF8);
+            File.WriteAllText(filePath, minifiedContents, new UTF8Encoding(true));
             Console.WriteLine("Minified file : " + filePath);
         }
 
