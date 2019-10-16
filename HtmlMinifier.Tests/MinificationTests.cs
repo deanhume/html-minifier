@@ -1,20 +1,18 @@
-﻿namespace HtmlMinifier.Tests
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
+using System.Collections.Generic;
+
+namespace HtmlMinifier.Tests
 {
-    using System;
-    using System.IO;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using NUnit.Framework;
-
-    [TestFixture]
+    [TestClass]
     public class MinificationTests
     {
+        
         readonly string _testDataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\Data");
         readonly Features noFeatures = new Features(new List<string>().ToArray());
 
-
-        [Test]
+        [TestMethod]
         public void ReadHtml_WithStandardText_ShouldReturnCorrectly()
         {
             // Arrange
@@ -24,10 +22,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.Standard, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void MinifyContents_WithComments_ShouldReturnCorrectly()
         {
             // Arrange
@@ -37,10 +35,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.Comments, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void MinifyContents_WithModelList_ShouldReturnCorrectly()
         {
             // Arrange
@@ -50,10 +48,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.ModelList, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void MinifyContents_WithLanguageSpecficCharacters_ShouldReturnCorrectly()
         {
             // Arrange
@@ -63,10 +61,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.LanguageSpecificCharacters, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void GithubIssue10_ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/10
@@ -77,10 +75,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue10, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void GithubIssue13_ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/13
@@ -90,10 +88,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue13, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void SixtyFiveKCharacters_ShouldBreakToNextLine()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14
@@ -105,10 +103,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.SixtyFiveThousandCharacters, new Features(args.ToArray()));
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void SixtyFiveKCharacters_WithoutArgs_ShouldMakeNoChange()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/14
@@ -120,10 +118,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.SixtyFiveThousandCharacters, new Features(args.ToArray()));
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void RemoveJavaScriptComments_WithStandardText_ShouldReturnCorrectly()
         {
             // Arrange
@@ -133,10 +131,10 @@
             string removedComments = StreamReaderExtension.RemoveJavaScriptComments(DataHelpers.JavaScriptComments);
 
             // Assert
-            Assert.That(removedComments, Is.EqualTo(expectedResult));
+            Assert.AreEqual(removedComments, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void RemoveMultipleJavaScriptComments_WithStandardText_ShouldReturnCorrectly()
         {
             // Arrange
@@ -146,10 +144,10 @@
             string removedComments = StreamReaderExtension.RemoveJavaScriptComments(DataHelpers.MultipleJavaScriptComments);
 
             // Assert
-            Assert.That(removedComments, Is.EqualTo(expectedResult));
+            Assert.AreEqual(removedComments, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void GithubIssue19Inherits_ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19
@@ -159,10 +157,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue19Inherits, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void GithubIssue19Multiple_ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/19
@@ -172,10 +170,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue19Multiple, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void GithubIssue23_ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/23
@@ -188,20 +186,20 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue23, new Features(args.ToArray()));
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void GithubIssue36_ShouldReturnCorrectly()
         {
             // Act
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue36, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(DataHelpers.GithubIssue36Result));
+            Assert.AreEqual(minifiedHtml, DataHelpers.GithubIssue36Result);
         }
 
-        [Test]
+        [TestMethod]
         public void RemoveMultipleHtmlComments_WithIncludeVirtuals_ShouldReturnCorrectly()
         {
             string expectedResult = DataHelpers.WithIncludeVirtualsResult;
@@ -210,10 +208,10 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.WithIncludeVirtuals, noFeatures);
 
             // Assert
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void BadHTML_ShouldReturnCorrectly()
         {
             string badHtml = "@model .";
@@ -221,30 +219,30 @@
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(badHtml, noFeatures);
 
             // Assert
-            Assert.That(badHtml, Is.EqualTo(badHtml));
+            Assert.AreEqual(badHtml, badHtml);
         }
 
-        [Test]
+        [TestMethod]
         public void ModelViewDoubleLessThanSign_ShouldTakenToTop()
         {
             string expectedResult = DataHelpers.TupleModelExpectedResult;
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.TupleModel, noFeatures);
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
 
-        [Test]
+        [TestMethod]
         public void TextLineAtSign_ShouldReplaceWithTextTags()
         {
             string expectedResult = DataHelpers.WithAtSignTextExpectedResult;
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.WithAtSignText, noFeatures);
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
-        [Test]
+        [TestMethod]
         public void CommentLineWithTripleSlash_ShouldBeRemoved()
         {
             string expectedResult = DataHelpers.CommentLineWithTripleSlashExpectedResult;
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.CommentLineWithTripleSlash, noFeatures);
-            Assert.That(minifiedHtml, Is.EqualTo(expectedResult));
+            Assert.AreEqual(minifiedHtml, expectedResult);
         }
     }
 }

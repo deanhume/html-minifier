@@ -1,20 +1,19 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HtmlMinifier.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class FileExtensionTests
     {
-        [Test]
+        [TestMethod]
         public void GithubIssue25_ShouldReturnCorrectly()
-        {                        
-            Assert.That("test.html".IsHtmlFile(), Is.True);
-            Assert.That("codes.js.aspx".IsHtmlFile(), Is.True);
-            Assert.That("test.inc".IsHtmlFile(), Is.True);
+        {
+            Assert.IsTrue("test.html".IsHtmlFile());
+            Assert.IsTrue("codes.js.aspx".IsHtmlFile());
+            Assert.IsTrue("test.inc".IsHtmlFile());
 
-            Assert.That("codes.aspx.js".IsHtmlFile(), Is.False);
-            Assert.That("aspx.codes.js".IsHtmlFile(), Is.False);
+            Assert.IsFalse("codes.aspx.js".IsHtmlFile());
+            Assert.IsFalse("aspx.codes.js".IsHtmlFile());
         }
     }
 }

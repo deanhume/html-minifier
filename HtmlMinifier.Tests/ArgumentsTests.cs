@@ -1,12 +1,12 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 namespace HtmlMinifier.Tests
 {
-    [TestFixture]
+    [TestClass]
     public class ArgumentsTests
     {
-        [Test]
+        [TestMethod]
         public void FindValuesInArgs_WithIgnores_ShouldReturnCorrectly()
         {
             // Arrange
@@ -19,12 +19,12 @@ namespace HtmlMinifier.Tests
             Features disabledFeatures = new Features(argsList.ToArray());
 
             // Assert
-            Assert.That(disabledFeatures.IgnoreHtmlComments, Is.True);
-            Assert.That(disabledFeatures.IgnoreJsComments, Is.True);
-            Assert.That(disabledFeatures.IgnoreKnockoutComments, Is.True);
+            Assert.IsTrue(disabledFeatures.IgnoreHtmlComments);
+            Assert.IsTrue(disabledFeatures.IgnoreJsComments);
+            Assert.IsTrue(disabledFeatures.IgnoreKnockoutComments);
         }
 
-        [Test]
+        [TestMethod]
         public void FindValuesInArgs_WithOneIgnore_ShouldReturnCorrectly()
         {
             // Arrange
@@ -35,9 +35,9 @@ namespace HtmlMinifier.Tests
             Features disabledFeatures = new Features(argsList.ToArray());
 
             // Assert
-            Assert.That(disabledFeatures.IgnoreHtmlComments, Is.True);
-            Assert.That(disabledFeatures.IgnoreJsComments, Is.False);
-            Assert.That(disabledFeatures.IgnoreKnockoutComments, Is.False);
+            Assert.IsTrue(disabledFeatures.IgnoreHtmlComments);
+            Assert.IsFalse(disabledFeatures.IgnoreJsComments);
+            Assert.IsFalse(disabledFeatures.IgnoreKnockoutComments);
         }
     }
 }
