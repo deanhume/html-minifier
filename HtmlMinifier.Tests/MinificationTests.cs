@@ -237,11 +237,25 @@ namespace HtmlMinifier.Tests
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.WithAtSignText, noFeatures);
             Assert.AreEqual(minifiedHtml, expectedResult);
         }
+
         [TestMethod]
         public void CommentLineWithTripleSlash_ShouldBeRemoved()
         {
             string expectedResult = DataHelpers.CommentLineWithTripleSlashExpectedResult;
             string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.CommentLineWithTripleSlash, noFeatures);
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void MinifyContents_WithArabic_ShouldReturnCorrectly()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.ArabicResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.Arabic, noFeatures);
+
+            // Assert
             Assert.AreEqual(minifiedHtml, expectedResult);
         }
     }
