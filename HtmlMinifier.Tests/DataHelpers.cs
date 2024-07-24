@@ -108,5 +108,8 @@ namespace HtmlMinifier.Tests
 
         public static string GithubIssue44 = "<h4> <i class=\"fa fa-play-circle-o\"> </i>Xem gì hôm nay?</h4>";
         public static string GithubIssue44Result = "<h4><i class=\"fa fa-play-circle-o\"></i>Xem gì hôm nay?</h4>";
+
+        public static string GithubIssue54 = "<input\r\n  type=\"file\"\r\n  id=\"docpicker\"\r\n  accept=\"application/pdf,image/*\" />";
+        public static string GithubIssue54Result = "<input type=\"file\" id=\"docpicker\" accept=\"application/pdf,image/*\" />";
     }
 }

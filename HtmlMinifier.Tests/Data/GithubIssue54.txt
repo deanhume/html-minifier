@@ -1,0 +1,4 @@
+﻿<input
+  type="file"
+  id="docpicker"
+  accept="application/pdf,image/*" />

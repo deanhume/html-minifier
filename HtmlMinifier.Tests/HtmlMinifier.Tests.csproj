@@ -95,6 +95,8 @@
     <Content Include="Data\GithubIssue10Result.txt" />
     <Content Include="Data\GithubIssue13.txt" />
     <Content Include="Data\GithubIssue13Result.txt" />
+    <Content Include="Data\GithubIssue54.txt" />
+    <Content Include="Data\GithubIssue54Result.txt" />
     <Content Include="Data\LanguageSpecificCharacters.txt" />
     <Content Include="Data\LanguageSpecificCharactersResult.txt" />
     <Content Include="Data\ModelList.txt" />
