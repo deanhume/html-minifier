@@ -54,5 +54,5 @@ If you'd like to find out how to use this with MSBUILD and your next publish, pl
 
 ## License
 
-(C) Dean Hume 2022, released under the MIT license
+(C) Dean Hume 2024, released under the MIT license
 
