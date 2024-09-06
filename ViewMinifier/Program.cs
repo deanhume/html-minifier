@@ -11,8 +11,14 @@ namespace HtmlMinifier
     /// </summary>
     public class Program
     {
+        public static long totalProcessed = 0;
+        public static long totalSaved = 0;
+
         static void Main(string[] args)
         {
+            args = new string[1];
+            args[0] = @"c:\temp\test";
+
             if (args.Length == 0)
             {
                 Console.WriteLine("Please provide folder path or file(s) to process");
@@ -33,7 +39,14 @@ namespace HtmlMinifier
                     }
                 }
                 Console.WriteLine("Minification Complete");
+                Console.WriteLine("------------------------------------------");
+                Console.WriteLine("Total Processed: {0}", BytesToString(totalProcessed));
+                Console.WriteLine("Total Minified: {0}", BytesToString(totalSaved));
+                Console.WriteLine("Total Saved: {0}", BytesToString(totalProcessed - totalSaved));
+                Console.WriteLine("------------------------------------------");
+
             }
+            Console.Read();
         }
 
         /// <summary>
@@ -64,11 +77,18 @@ namespace HtmlMinifier
         {
             Console.WriteLine("Beginning Minification");
 
+            // File size before minify
+            totalProcessed += new FileInfo(filePath).Length;
+
             // Minify contents
             string minifiedContents = MinifyHtml(filePath, features);
 
             // Write to the same file
             File.WriteAllText(filePath, minifiedContents, new UTF8Encoding(true));
+
+            // File size after minify
+            totalSaved += new FileInfo(filePath).Length;
+
             Console.WriteLine("Minified file : " + filePath);
         }
 
@@ -104,6 +124,17 @@ namespace HtmlMinifier
             {
                 return reader.MinifyHtmlCode(features);
             }
+        }
+
+        static String BytesToString(long byteCount)
+        {
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            if (byteCount == 0)
+                return "0" + suf[0];
+            long bytes = Math.Abs(byteCount);
+            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
     }
 }
