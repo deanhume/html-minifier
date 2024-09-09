@@ -50,7 +50,7 @@ If you want to minify individual files you can do:
 
     C:\>HtmlMinifier.exe "C:\Folder\file1.html" "C:\Folder\file2.html"
 
-If you'd like to find out how to use this with MSBUILD and your next publish, please follow this [link.](http://deanhume.com/Home/BlogPost/a-simple-html-minifier-for-asp-net/2097)
+If you'd like to find out how to use this with MSBUILD and your next publish, please follow this [link.](https://deanhume.com/a-simple-html-minifier-for-asp-net/)
 
 ## License
 
