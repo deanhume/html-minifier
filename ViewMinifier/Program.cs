@@ -16,9 +16,6 @@ namespace HtmlMinifier
 
         static void Main(string[] args)
         {
-            args = new string[1];
-            args[0] = @"c:\temp\test";
-
             if (args.Length == 0)
             {
                 Console.WriteLine("Please provide folder path or file(s) to process");
@@ -38,6 +35,8 @@ namespace HtmlMinifier
                         ProcessFile(features, arg);
                     }
                 }
+
+                // Write the results
                 Console.WriteLine("Minification Complete");
                 Console.WriteLine("------------------------------------------");
                 Console.WriteLine("Total Processed: {0}", BytesToString(totalProcessed));
@@ -46,7 +45,6 @@ namespace HtmlMinifier
                 Console.WriteLine("------------------------------------------");
 
             }
-            Console.Read();
         }
 
         /// <summary>
@@ -126,14 +124,24 @@ namespace HtmlMinifier
             }
         }
 
-        static String BytesToString(long byteCount)
+        /// <summary>
+        /// Converts bytes to a human readable string.
+        /// </summary>
+        /// <param name="byteCount">bytes</param>
+        /// <returns>A human readable string</returns>
+        private static string BytesToString(long byteCount)
         {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" }; //Longs run out around EB
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+
             if (byteCount == 0)
                 return "0" + suf[0];
+
             long bytes = Math.Abs(byteCount);
+
             int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
+
             double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+
             return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
     }
