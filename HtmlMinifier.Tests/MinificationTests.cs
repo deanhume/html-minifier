@@ -200,6 +200,16 @@ namespace HtmlMinifier.Tests
         }
 
         [TestMethod]
+        public void GithubIssue38_IgnorePreTag_ShouldReturnCorrectly()
+        {
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue38, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, DataHelpers.GithubIssue38Result);
+        }
+
+        [TestMethod]
         public void RemoveMultipleHtmlComments_WithIncludeVirtuals_ShouldReturnCorrectly()
         {
             string expectedResult = DataHelpers.WithIncludeVirtualsResult;

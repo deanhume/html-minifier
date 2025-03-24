@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HtmlMinifier.Tests
+﻿namespace HtmlMinifier.Tests
 {
     public static class DataHelpers
     {
@@ -111,5 +105,10 @@ namespace HtmlMinifier.Tests
 
         public static string GithubIssue54 = "<input\r\n  type=\"file\"\r\n  id=\"docpicker\"\r\n  accept=\"application/pdf,image/*\" />";
         public static string GithubIssue54Result = "<input type=\"file\" id=\"docpicker\" accept=\"application/pdf,image/*\" />";
+
+        public static string GithubIssue38 = "<div>\r\n<pre>\r\nTEST\r\nHello\r\nWorld\r\n</pre>\r\n</div>";
+        public static string GithubIssue38Result = "<div> <pre>\r\nTEST\r\nHello\r\nWorld\r\n</pre> </div>";
+
+
     }
 }

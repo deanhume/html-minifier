@@ -145,6 +145,14 @@ namespace HtmlMinifier
                 htmlContents = RemoveJavaScriptComments(htmlContents);
             }
 
+            // Extract <pre> contents
+            var preTagContents = new List<string>();
+            htmlContents = Regex.Replace(htmlContents, @"<pre[^>]*>[\s\S]*?<\/pre>", match =>
+            {
+                preTagContents.Add(match.Value);
+                return $"{{{{PRE_TAG_CONTENT_{preTagContents.Count - 1}}}}}";
+            });
+
             // Remove special keys
             htmlContents = htmlContents.Replace("/*", "{{{SLASH_STAR}}}");
 
@@ -168,7 +176,7 @@ namespace HtmlMinifier
 
             // Replace spaces between brackets
             htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
-            
+
             // Replace comments
             if (!features.IgnoreHtmlComments)
             {
@@ -192,6 +200,13 @@ namespace HtmlMinifier
 
             // Put back special keys
             htmlContents = htmlContents.Replace("{{{SLASH_STAR}}}", "/*");
+
+            // Restore <pre> contents
+            for (int i = 0; i < preTagContents.Count; i++)
+            {
+                htmlContents = htmlContents.Replace($"{{{{PRE_TAG_CONTENT_{i}}}}}", preTagContents[i]);
+            }
+
             return htmlContents.Trim();
         }
 
