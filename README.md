@@ -1,3 +1,5 @@
+![Github Actions Status](https://github.com/deanhume/html-minifier/actions/workflows/dotnet-desktop.yml/badge.svg)
+
 HTML Minifier
 =============
 
