@@ -1,60 +1,125 @@
+# HTML Minifier
+
 ![Github Actions Status](https://github.com/deanhume/html-minifier/actions/workflows/dotnet-desktop.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 
-HTML Minifier
-=============
+A fast and efficient command-line tool to minify your HTML, Razor views, and Web Forms views. Reduce file sizes, improve load times, and deliver a better user experience by removing unnecessary whitespace and comments from your HTML files.
 
-A simple command line tool to minify your HTML, Razor views & Web Forms views. By minifying your HTML on bigger web pages,
-you will save on bytes that your users need to donwload. Less bytes equal faster web pages & faster web pages equal happy users!
+## ✨ Features
 
-## Getting Started
+- 🚀 **Fast Processing** - Minifies files and entire directory trees quickly
+- 📁 **Flexible Input** - Process individual files, specific folders, or entire directory structures
+- ⚙️ **Configurable** - Control line length and selectively disable minification features
+- 🔧 **Framework Support** - Special handling for Knockout.js, Angular, and other comment-dependent frameworks
+- 🎯 **Targeted Minification** - Choose what to minify: HTML comments, JavaScript comments, or Knockout comments
+- 🔄 **CI/CD Ready** - Easy integration with MSBuild and build pipelines
 
-Go from HTML that looks like this:
+## 📦 Installation
 
-    <h2>
-        Admin Menu</h2>
-    <ul>
-        <li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li>
-        <li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li>
-        <li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li>
-    </ul>
+1. Download the latest release from the [releases page](https://github.com/deanhume/html-minifier/releases)
+2. Extract the `HtmlMinifier.exe` to your desired location
+3. Add the tool to your PATH or reference it directly
 
-To HTML that looks like this:
+## 🚀 Quick Start
 
-    <h2> Admin Menu</h2><ul><li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li><li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li><li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li></ul>
+Transform verbose HTML into compact, optimized code:
 
-## Usage Examples
+### Before:
 
-In order to use from the command line, you simply pass through a folder path that contains all of the files you want to minify. The minifier will process all images in the root and subfolders.
+```html
+<h2>
+    Admin Menu</h2>
+<ul>
+    <li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li>
+    <li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li>
+    <li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li>
+</ul>
+```
 
-    C:\>HtmlMinifier.exe "C:\Folder"
+### After:
 
-If you'd like to restrict the number of characters per line and force it to break to the next line, use the minifier with the following optional value (where the number is the max character count).
+```html
+<h2> Admin Menu</h2><ul><li>@Html.ActionLink("Edit blog entries", "List", "Admin")</li><li>@Html.ActionLink("View Comments", "CommentList", "Admin")</li><li>@Html.ActionLink("Clear Cache", "ClearCache", "Admin")</li></ul>
+```
 
-    C:\>HtmlMinifier.exe "C:\Folder" "60000"
+## 📖 Usage
 
-There is also the option to disable certain minification features. For example, if you use a you rely on HTML comments (Knockout, Angular, etc.) you might want to leave them in the minified HTML.
+### Basic Usage
 
-    C:\>HtmlMinifier.exe "C:\Folder" ignorehtmlcomments
+Minify all HTML files in a folder (including subfolders):
 
-You can also disable the minification of JavaScript Comments
+```bash
+HtmlMinifier.exe "C:\Folder"
+```
 
-    C:\>HtmlMinifier.exe "C:\Folder" ignorejscomments
+### Advanced Options
 
-If you use knockoutJS, you can optionally disable the minification of [Knockout](http://knockoutjs.com/) Comments
+#### Limit Line Length
 
-    C:\>HtmlMinifier.exe "C:\Folder" ignoreknockoutcomments
+Restrict the maximum number of characters per line:
 
-If you want to minify individual folders you can do:
+```bash
+HtmlMinifier.exe "C:\Folder" "60000"
+```
 
-    C:\>HtmlMinifier.exe "C:\Folder\fld1" "C:\Folder\fld2"
+#### Preserve Comments
 
-If you want to minify individual files you can do:
+For frameworks that rely on HTML comments (Angular, Knockout, etc.), preserve them:
 
-    C:\>HtmlMinifier.exe "C:\Folder\file1.html" "C:\Folder\file2.html"
+```bash
+HtmlMinifier.exe "C:\Folder" ignorehtmlcomments
+```
 
-If you'd like to find out how to use this with MSBUILD and your next publish, please follow this [link.](https://deanhume.com/a-simple-html-minifier-for-asp-net/)
+#### Preserve JavaScript Comments
 
-## License
+Keep JavaScript comments in your code:
 
-(C) Dean Hume 2013 - 2025, released under the MIT license
+```bash
+HtmlMinifier.exe "C:\Folder" ignorejscomments
+```
+
+#### Preserve Knockout Comments
+
+Specifically preserve [Knockout.js](http://knockoutjs.com/) comments:
+
+```bash
+HtmlMinifier.exe "C:\Folder" ignoreknockoutcomments
+```
+
+### Multiple Targets
+
+#### Minify Multiple Folders
+
+```bash
+HtmlMinifier.exe "C:\Folder\fld1" "C:\Folder\fld2"
+```
+
+#### Minify Specific Files
+
+```bash
+HtmlMinifier.exe "C:\Folder\file1.html" "C:\Folder\file2.html"
+```
+
+## 🔨 Build Integration
+
+Integrate HTML Minifier into your build process for automatic minification during deployment. Check out this [detailed guide on using HTML Minifier with MSBuild](https://deanhume.com/a-simple-html-minifier-for-asp-net/).
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 Requirements
+
+- .NET Framework (Windows)
+- Supports HTML, Razor (.cshtml), and Web Forms (.aspx) files
+
+## 📄 License
+
+Copyright (C) Dean Hume 2013 - 2025
+
+Released under the [MIT License](LICENSE.md)
+
+---
+
+**Made with ❤️ by [Dean Hume](https://deanhume.com)**
 
