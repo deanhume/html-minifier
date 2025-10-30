@@ -16,23 +16,50 @@ namespace HtmlMinifier
 
         static void Main(string[] args)
         {
-            if (args.Length == 0)
+            try
             {
-                Console.WriteLine("Please provide folder path or file(s) to process");
-            }
-            else
-            {
+                if (args.Length == 0)
+                {
+                    Console.WriteLine("Please provide folder path or file(s) to process");
+                    Environment.Exit(1);
+                    return;
+                }
+
                 // Determine which features to enable or disable
                 var features = new Features(args);
+                int errorCount = 0;
+
                 foreach (var arg in args)
                 {
-                    if (Directory.Exists(arg))
+                    // Skip feature flags
+                    if (IsFeatureFlag(arg))
+                        continue;
+
+                    try
                     {
-                        ProcessDirectory(features, arg);
+                        if (Directory.Exists(arg))
+                        {
+                            ProcessDirectory(features, arg);
+                        }
+                        else if (File.Exists(arg))
+                        {
+                            ProcessFile(features, arg);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Warning: Path not found - {arg}");
+                            errorCount++;
+                        }
                     }
-                    else if (File.Exists(arg))
+                    catch (UnauthorizedAccessException ex)
                     {
-                        ProcessFile(features, arg);
+                        Console.WriteLine($"Error: Access denied to {arg} - {ex.Message}");
+                        errorCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error processing {arg}: {ex.Message}");
+                        errorCount++;
                     }
                 }
 
@@ -42,27 +69,88 @@ namespace HtmlMinifier
                 Console.WriteLine("Total Processed: {0}", BytesToString(totalProcessed));
                 Console.WriteLine("Total Minified: {0}", BytesToString(totalSaved));
                 Console.WriteLine("Total Saved: {0}", BytesToString(totalProcessed - totalSaved));
+                if (errorCount > 0)
+                {
+                    Console.WriteLine("Errors Encountered: {0}", errorCount);
+                }
                 Console.WriteLine("------------------------------------------");
 
+                Environment.Exit(errorCount > 0 ? 1 : 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Fatal error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                Environment.Exit(1);
             }
         }
 
         /// <summary>
-        /// Minify all files in a given file
+        /// Checks if the argument is a feature flag.
+        /// </summary>
+        /// <param name="arg">The argument to check.</param>
+        /// <returns>True if it's a feature flag, false otherwise.</returns>
+        private static bool IsFeatureFlag(string arg)
+        {
+            var lowerArg = arg.ToLower();
+            return lowerArg == "ignorehtmlcomments" ||
+                   lowerArg == "ignorejscomments" ||
+                   lowerArg == "ignoreknockoutcomments" ||
+                   int.TryParse(arg, out _);
+        }
+
+        /// <summary>
+        /// Minify all files in a given directory
         /// </summary>
         /// <param name="features">Features object</param>
         /// <param name="folderPath">The path to the folder</param>
         public static void ProcessDirectory(Features features, string folderPath)
         {
-            // Loop through the files in the folder and look for any of the following extensions
-            foreach (string folder in GetDirectories(folderPath))
+            try
             {
-                string[] filePaths = Directory.GetFiles(folder);
-                foreach (var filePath in filePaths)
+                // Loop through the files in the folder and look for any of the following extensions
+                foreach (string folder in GetDirectories(folderPath))
                 {
-                    if (filePath.IsHtmlFile())
-                        ProcessFile(features, filePath);
+                    try
+                    {
+                        string[] filePaths = Directory.GetFiles(folder);
+                        foreach (var filePath in filePaths)
+                        {
+                            if (filePath.IsHtmlFile())
+                            {
+                                try
+                                {
+                                    ProcessFile(features, filePath);
+                                }
+                                catch (UnauthorizedAccessException ex)
+                                {
+                                    Console.WriteLine($"Error: Access denied to file {filePath} - {ex.Message}");
+                                }
+                                catch (IOException ex)
+                                {
+                                    Console.WriteLine($"Error: IO error processing file {filePath} - {ex.Message}");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error: Failed to process file {filePath} - {ex.Message}");
+                                }
+                            }
+                        }
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        Console.WriteLine($"Error: Access denied to directory {folder} - {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: Failed to read directory {folder} - {ex.Message}");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: Failed to process directory {folderPath} - {ex.Message}");
+                throw;
             }
         }
 
@@ -73,21 +161,61 @@ namespace HtmlMinifier
         /// <param name="filePath">The path to the file</param>
         public static void ProcessFile(Features features, string filePath)
         {
-            Console.WriteLine("Beginning Minification");
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("File path cannot be empty", nameof(filePath));
+            }
 
-            // File size before minify
-            totalProcessed += new FileInfo(filePath).Length;
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"File not found: {filePath}");
+            }
 
-            // Minify contents
-            string minifiedContents = MinifyHtml(filePath, features);
+            Console.WriteLine($"Beginning minification of: {filePath}");
 
-            // Write to the same file
-            File.WriteAllText(filePath, minifiedContents, new UTF8Encoding(true));
+            try
+            {
+                // File size before minify
+                var fileInfo = new FileInfo(filePath);
+                var originalSize = fileInfo.Length;
+                totalProcessed += originalSize;
 
-            // File size after minify
-            totalSaved += new FileInfo(filePath).Length;
+                // Minify contents
+                string minifiedContents = MinifyHtml(filePath, features);
 
-            Console.WriteLine("Minified file : " + filePath);
+                if (string.IsNullOrEmpty(minifiedContents))
+                {
+                    Console.WriteLine($"Warning: Minification resulted in empty content for {filePath}. Skipping.");
+                    return;
+                }
+
+                // Write to the same file
+                File.WriteAllText(filePath, minifiedContents, new UTF8Encoding(true));
+
+                // File size after minify
+                var newSize = new FileInfo(filePath).Length;
+                totalSaved += newSize;
+
+                var savedBytes = originalSize - newSize;
+                var percentSaved = originalSize > 0 ? (savedBytes * 100.0 / originalSize) : 0;
+
+                Console.WriteLine($"Minified file: {filePath} (Saved: {BytesToString(savedBytes)}, {percentSaved:F1}%)");
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Error: Access denied to {filePath} - {ex.Message}");
+                throw;
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error: IO error with {filePath} - {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: Failed to minify {filePath} - {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
@@ -97,30 +225,83 @@ namespace HtmlMinifier
         /// <returns>A list of the directories.</returns>
         public static IEnumerable<string> GetDirectories(string path)
         {
-            // Get all subdirectories
-            IEnumerable<string> directories = from subdirectory in Directory.GetDirectories(path, "*", SearchOption.AllDirectories) select subdirectory;
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException("Path cannot be empty", nameof(path));
+            }
 
-            // Add the subdirectories
-            IList<string> allDirectories = directories as IList<string> ?? directories.ToList();
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotFoundException($"Directory not found: {path}");
+            }
 
-            // Add the root folder
-            allDirectories.Add(path);
+            try
+            {
+                // Get all subdirectories
+                IEnumerable<string> directories = from subdirectory in Directory.GetDirectories(path, "*", SearchOption.AllDirectories) select subdirectory;
 
-            return allDirectories;
+                // Add the subdirectories
+                IList<string> allDirectories = directories as IList<string> ?? directories.ToList();
+
+                // Add the root folder
+                allDirectories.Add(path);
+
+                return allDirectories;
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Warning: Access denied to some subdirectories in {path} - {ex.Message}");
+                // Return at least the root directory
+                return new List<string> { path };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: Failed to enumerate directories in {path} - {ex.Message}");
+                throw;
+            }
         }
 
         /// <summary>
         /// Minifies the contents of the given view.
         /// </summary>
         /// <param name="filePath"> The file path. </param>
+        /// <param name="features"> The features to apply. </param>
         /// <returns>
         /// The <see cref="string"/>.
         /// </returns>
         public static string MinifyHtml(string filePath, Features features)
         {
-            using (var reader = new StreamReader(filePath))
+            if (string.IsNullOrWhiteSpace(filePath))
             {
-                return reader.MinifyHtmlCode(features);
+                throw new ArgumentException("File path cannot be empty", nameof(filePath));
+            }
+
+            if (features == null)
+            {
+                throw new ArgumentNullException(nameof(features));
+            }
+
+            try
+            {
+                using (var reader = new StreamReader(filePath))
+                {
+                    return reader.MinifyHtmlCode(features);
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine($"Error: File not found - {filePath}");
+                throw new FileNotFoundException($"Cannot minify - file not found: {filePath}", ex);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error: Cannot read file {filePath} - {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: Failed to minify HTML in {filePath} - {ex.Message}");
+                throw;
             }
         }
 

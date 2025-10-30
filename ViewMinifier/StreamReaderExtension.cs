@@ -16,7 +16,28 @@ namespace HtmlMinifier
         /// <returns>The minified HTML code.</returns>
         public static string MinifyHtmlCode(this StreamReader reader, Features features)
         {
-            return MinifyHtmlCode(reader.ReadToEnd(), features);
+            if (reader == null)
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
+
+            if (features == null)
+            {
+                throw new ArgumentNullException(nameof(features));
+            }
+
+            try
+            {
+                return MinifyHtmlCode(reader.ReadToEnd(), features);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                throw new InvalidOperationException("File is too large to process", ex);
+            }
+            catch (IOException ex)
+            {
+                throw new InvalidOperationException("Error reading file content", ex);
+            }
         }
 
         /// <summary>
@@ -27,18 +48,43 @@ namespace HtmlMinifier
         /// <returns>The minified HTML code.</returns>
         public static string MinifyHtmlCode(string htmlCode, Features features)
         {
-            string contents;
+            if (string.IsNullOrEmpty(htmlCode))
+            {
+                return htmlCode;
+            }
 
-            // Minify the contents
-            contents = MinifyHtml(htmlCode, features);
+            if (features == null)
+            {
+                throw new ArgumentNullException(nameof(features));
+            }
 
-            // Ensure that the max length is less than 65K characters
-            contents = EnsureMaxLength(contents, features);
+            try
+            {
+                string contents;
 
-            // Re-add the @model declaration
-            contents = ReArrangeDeclarations(contents);
+                // Minify the contents
+                contents = MinifyHtml(htmlCode, features);
 
-            return contents;
+                // Ensure that the max length is less than 65K characters
+                contents = EnsureMaxLength(contents, features);
+
+                // Re-add the @model declaration
+                contents = ReArrangeDeclarations(contents);
+
+                return contents;
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (RegexMatchTimeoutException ex)
+            {
+                throw new InvalidOperationException("Minification timed out - file may be too complex", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to minify HTML content: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -139,75 +185,100 @@ namespace HtmlMinifier
         /// </returns>
         public static string MinifyHtml(string htmlContents, Features features)
         {
-            // First, remove all JavaScript comments
-            if (!features.IgnoreJsComments)
+            if (string.IsNullOrEmpty(htmlContents))
             {
-                htmlContents = RemoveJavaScriptComments(htmlContents);
+                return htmlContents;
             }
 
-            // Extract <pre> contents
-            var preTagContents = new List<string>();
-            htmlContents = Regex.Replace(htmlContents, @"<pre[^>]*>[\s\S]*?<\/pre>", match =>
+            if (features == null)
             {
-                preTagContents.Add(match.Value);
-                return $"{{{{PRE_TAG_CONTENT_{preTagContents.Count - 1}}}}}";
-            });
+                throw new ArgumentNullException(nameof(features));
+            }
 
-            // Remove special keys
-            htmlContents = htmlContents.Replace("/*", "{{{SLASH_STAR}}}");
-
-            // Minify the string
-            htmlContents = Regex.Replace(htmlContents, @"/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/", "");
-
-            // ReplaceTextLine
-            htmlContents = ReplaceTextLine(htmlContents);
-
-            // Replace line comments
-            htmlContents = Regex.Replace(htmlContents, @"/// (.*?)\r?\n", "", RegexOptions.Singleline);
-
-            // Replace line comments
-            htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
-
-            // Replace spaces between quotes
-            htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
-
-            // Replace line breaks
-            htmlContents = Regex.Replace(htmlContents, @"\s*\n\s*", "\n");
-
-            // Replace spaces between brackets
-            htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
-
-            // Replace comments
-            if (!features.IgnoreHtmlComments)
+            try
             {
-                if (features.IgnoreKnockoutComments)
+                // First, remove all JavaScript comments
+                if (!features.IgnoreJsComments)
                 {
-                    htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(?!ko .*)(?!\/ko)(.*?)-->", "");
+                    htmlContents = RemoveJavaScriptComments(htmlContents);
                 }
-                else
+
+                // Extract <pre> contents
+                var preTagContents = new List<string>();
+                htmlContents = Regex.Replace(htmlContents, @"<pre[^>]*>[\s\S]*?<\/pre>", match =>
                 {
-                    htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(.*?)-->", "");
+                    preTagContents.Add(match.Value);
+                    return $"{{{{PRE_TAG_CONTENT_{preTagContents.Count - 1}}}}}";
+                });
+
+                // Remove special keys
+                htmlContents = htmlContents.Replace("/*", "{{{SLASH_STAR}}}");
+
+                // Minify the string
+                htmlContents = Regex.Replace(htmlContents, @"/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/", "");
+
+                // ReplaceTextLine
+                htmlContents = ReplaceTextLine(htmlContents);
+
+                // Replace line comments
+                htmlContents = Regex.Replace(htmlContents, @"/// (.*?)\r?\n", "", RegexOptions.Singleline);
+
+                // Replace line comments
+                htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
+
+                // Replace spaces between quotes
+                htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
+
+                // Replace line breaks
+                htmlContents = Regex.Replace(htmlContents, @"\s*\n\s*", "\n");
+
+                // Replace spaces between brackets
+                htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
+
+                // Replace comments
+                if (!features.IgnoreHtmlComments)
+                {
+                    if (features.IgnoreKnockoutComments)
+                    {
+                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(?!ko .*)(?!\/ko)(.*?)-->", "");
+                    }
+                    else
+                    {
+                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(.*?)-->", "");
+                    }
                 }
-            }
 
-            // single-line doctype must be preserved
-            var firstEndBracketPosition = htmlContents.IndexOf(">", StringComparison.Ordinal);
-            if (firstEndBracketPosition >= 0)
+                // single-line doctype must be preserved
+                var firstEndBracketPosition = htmlContents.IndexOf(">", StringComparison.Ordinal);
+                if (firstEndBracketPosition >= 0)
+                {
+                    htmlContents = htmlContents.Remove(firstEndBracketPosition, 1);
+                    htmlContents = htmlContents.Insert(firstEndBracketPosition, ">");
+                }
+
+                // Put back special keys
+                htmlContents = htmlContents.Replace("{{{SLASH_STAR}}}", "/*");
+
+                // Restore <pre> contents
+                for (int i = 0; i < preTagContents.Count; i++)
+                {
+                    htmlContents = htmlContents.Replace($"{{{{PRE_TAG_CONTENT_{i}}}}}", preTagContents[i]);
+                }
+
+                return htmlContents.Trim();
+            }
+            catch (RegexMatchTimeoutException ex)
             {
-                htmlContents = htmlContents.Remove(firstEndBracketPosition, 1);
-                htmlContents = htmlContents.Insert(firstEndBracketPosition, ">");
+                throw new InvalidOperationException("Regex operation timed out during minification", ex);
             }
-
-            // Put back special keys
-            htmlContents = htmlContents.Replace("{{{SLASH_STAR}}}", "/*");
-
-            // Restore <pre> contents
-            for (int i = 0; i < preTagContents.Count; i++)
+            catch (ArgumentException ex)
             {
-                htmlContents = htmlContents.Replace($"{{{{PRE_TAG_CONTENT_{i}}}}}", preTagContents[i]);
+                throw new InvalidOperationException($"Invalid HTML content: {ex.Message}", ex);
             }
-
-            return htmlContents.Trim();
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Unexpected error during minification: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
@@ -235,19 +306,35 @@ namespace HtmlMinifier
         /// <returns>A string with all JS comments removed</returns>
         public static string RemoveJavaScriptComments(string javaScriptComments)
         {
-            // Remove JavaScript comments
-            Regex extractScripts = new Regex(@"<script[^>]*>[\s\S]*?</script>");
-
-            // Loop through the script blocks
-            foreach (Match match in extractScripts.Matches(javaScriptComments))
+            if (string.IsNullOrEmpty(javaScriptComments))
             {
-                var scriptBlock = match.Value;
-
-                javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|']//(.*?)\r?\n", ""));
-
+                return javaScriptComments;
             }
 
-            return javaScriptComments;
+            try
+            {
+                // Remove JavaScript comments
+                Regex extractScripts = new Regex(@"<script[^>]*>[\s\S]*?</script>");
+
+                // Loop through the script blocks
+                foreach (Match match in extractScripts.Matches(javaScriptComments))
+                {
+                    var scriptBlock = match.Value;
+
+                    javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|']//(.*?)\r?\n", ""));
+
+                }
+
+                return javaScriptComments;
+            }
+            catch (RegexMatchTimeoutException ex)
+            {
+                throw new InvalidOperationException("Timeout while removing JavaScript comments", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Error removing JavaScript comments: {ex.Message}", ex);
+            }
         }
 
         /// <summary>
