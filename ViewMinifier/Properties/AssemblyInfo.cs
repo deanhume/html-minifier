@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HtmlMinifier")]
-[assembly: AssemblyCopyright("Copyright Dean Hume © 2014 - 2024")]
+[assembly: AssemblyCopyright("Copyright Dean Hume © 2014 - 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

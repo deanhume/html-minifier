@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace HtmlMinifier
@@ -18,11 +19,30 @@ namespace HtmlMinifier
         {
             try
             {
+                // Check for help or version flags
                 if (args.Length == 0)
                 {
-                    Console.WriteLine("Please provide folder path or file(s) to process");
+                    ShowUsage();
                     Environment.Exit(1);
                     return;
+                }
+
+                if (args.Length == 1)
+                {
+                    var arg = args[0].ToLower();
+                    if (arg == "--help" || arg == "-h" || arg == "/?" || arg == "-?")
+                    {
+                        ShowHelp();
+                        Environment.Exit(0);
+                        return;
+                    }
+                    
+                    if (arg == "--version" || arg == "-v")
+                    {
+                        ShowVersion();
+                        Environment.Exit(0);
+                        return;
+                    }
                 }
 
                 // Determine which features to enable or disable
@@ -83,6 +103,98 @@ namespace HtmlMinifier
                 Console.WriteLine(ex.StackTrace);
                 Environment.Exit(1);
             }
+        }
+
+        /// <summary>
+        /// Shows brief usage information.
+        /// </summary>
+        private static void ShowUsage()
+        {
+            Console.WriteLine(GetUsageText());
+        }
+
+        /// <summary>
+        /// Gets the usage text.
+        /// </summary>
+        /// <returns>The usage text.</returns>
+        public static string GetUsageText()
+        {
+            return "Please provide folder path or file(s) to process\nUse --help for more information";
+        }
+
+        /// <summary>
+        /// Shows detailed help information.
+        /// </summary>
+        private static void ShowHelp()
+        {
+            Console.WriteLine(GetHelpText());
+        }
+
+        /// <summary>
+        /// Gets the help text.
+        /// </summary>
+        /// <returns>The help text.</returns>
+        public static string GetHelpText()
+        {
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            var sb = new StringBuilder();
+            
+            sb.AppendLine($"HTML Minifier v{version.Major}.{version.Minor}.{version.Build}");
+            sb.AppendLine("A fast and efficient tool to minify HTML, Razor views, and Web Forms views.");
+            sb.AppendLine();
+            sb.AppendLine("USAGE:");
+            sb.AppendLine("  HtmlMinifier.exe <path> [options]");
+            sb.AppendLine();
+            sb.AppendLine("ARGUMENTS:");
+            sb.AppendLine("  <path>                    File or folder path to process (supports multiple)");
+            sb.AppendLine();
+            sb.AppendLine("OPTIONS:");
+            sb.AppendLine("  <number>                  Maximum line length (e.g., 60000)");
+            sb.AppendLine("  ignorehtmlcomments        Preserve HTML comments (for Angular, etc.)");
+            sb.AppendLine("  ignorejscomments          Preserve JavaScript comments");
+            sb.AppendLine("  ignoreknockoutcomments    Preserve Knockout.js comments");
+            sb.AppendLine("  --help, -h, /?            Show this help message");
+            sb.AppendLine("  --version, -v             Show version information");
+            sb.AppendLine();
+            sb.AppendLine("EXAMPLES:");
+            sb.AppendLine("  HtmlMinifier.exe \"C:\\MyProject\"");
+            sb.AppendLine("  HtmlMinifier.exe \"C:\\MyProject\" 60000");
+            sb.AppendLine("  HtmlMinifier.exe \"C:\\MyProject\" ignorehtmlcomments");
+            sb.AppendLine("  HtmlMinifier.exe \"file1.html\" \"file2.html\"");
+            sb.AppendLine();
+            sb.AppendLine("SUPPORTED FILE TYPES:");
+            sb.AppendLine("  .html, .htm, .cshtml, .vbhtml, .aspx, .ascx, .master, .inc");
+            sb.AppendLine();
+            sb.Append("For more information, visit: https://github.com/deanhume/html-minifier");
+            
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Shows version information.
+        /// </summary>
+        private static void ShowVersion()
+        {
+            Console.WriteLine(GetVersionText());
+        }
+
+        /// <summary>
+        /// Gets the version text.
+        /// </summary>
+        /// <returns>The version text.</returns>
+        public static string GetVersionText()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetName().Version;
+            var titleAttr = assembly.GetCustomAttribute<AssemblyTitleAttribute>();
+            var copyrightAttr = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
+            var sb = new StringBuilder();
+            
+            sb.AppendLine($"{titleAttr?.Title ?? "HTML Minifier"} v{version.Major}.{version.Minor}.{version.Build}");
+            sb.AppendLine(copyrightAttr?.Copyright ?? "Copyright Dean Hume");
+            sb.Append("License: MIT");
+            
+            return sb.ToString();
         }
 
         /// <summary>

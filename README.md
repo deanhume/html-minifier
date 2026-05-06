@@ -44,6 +44,20 @@ Transform verbose HTML into compact, optimized code:
 
 ## 📖 Usage
 
+### Getting Help
+
+View all available options:
+
+```bash
+HtmlMinifier.exe --help
+```
+
+Check the version:
+
+```bash
+HtmlMinifier.exe --version
+```
+
 ### Basic Usage
 
 Minify all HTML files in a folder (including subfolders):

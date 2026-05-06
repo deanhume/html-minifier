@@ -62,6 +62,7 @@
     <Compile Include="DataHelpers.cs" />
     <Compile Include="EdgeCaseTests.cs" />
     <Compile Include="FileExtensionTests.cs" />
+    <Compile Include="HelpAndVersionTests.cs" />
     <Compile Include="MinificationTests.cs" />
     <Compile Include="PerformanceBenchmarkTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
