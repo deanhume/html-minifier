@@ -17,7 +17,10 @@ namespace HtmlMinifier
     {
         private static long totalProcessed = 0;
         private static long totalSaved = 0;
+        private static int totalFilesProcessed = 0;
+        private static int totalFilesSkipped = 0;
         private static readonly object lockObject = new object();
+        private static DateTime startTime;
 
         static void Main(string[] args)
         {
@@ -26,7 +29,7 @@ namespace HtmlMinifier
                 // Check for help or version flags
                 if (args.Length == 0)
                 {
-                    ShowUsage();
+                    ConsoleReporter.ShowUsage();
                     Environment.Exit(1);
                     return;
                 }
@@ -36,18 +39,24 @@ namespace HtmlMinifier
                     var arg = args[0].ToLower();
                     if (arg == "--help" || arg == "-h" || arg == "/?" || arg == "-?")
                     {
-                        ShowHelp();
+                        ConsoleReporter.ShowHelp();
                         Environment.Exit(0);
                         return;
                     }
                     
                     if (arg == "--version" || arg == "-v")
                     {
-                        ShowVersion();
+                        ConsoleReporter.ShowVersion();
                         Environment.Exit(0);
                         return;
                     }
                 }
+
+                // Start timing
+                startTime = DateTime.Now;
+
+                // Show banner
+                ConsoleReporter.ShowBanner();
 
                 // Determine which features to enable or disable
                 var features = new Features(args);
@@ -88,16 +97,8 @@ namespace HtmlMinifier
                 }
 
                 // Write the results
-                Console.WriteLine("Minification Complete");
-                Console.WriteLine("------------------------------------------");
-                Console.WriteLine("Total Processed: {0}", BytesToString(totalProcessed));
-                Console.WriteLine("Total Minified: {0}", BytesToString(totalSaved));
-                Console.WriteLine("Total Saved: {0}", BytesToString(totalProcessed - totalSaved));
-                if (errorCount > 0)
-                {
-                    Console.WriteLine("Errors Encountered: {0}", errorCount);
-                }
-                Console.WriteLine("------------------------------------------");
+                ConsoleReporter.ShowSummary(totalProcessed, totalSaved, totalFilesProcessed, 
+                    totalFilesSkipped, errorCount, startTime);
 
                 Environment.Exit(errorCount > 0 ? 1 : 0);
             }
@@ -107,98 +108,6 @@ namespace HtmlMinifier
                 Console.WriteLine(ex.StackTrace);
                 Environment.Exit(1);
             }
-        }
-
-        /// <summary>
-        /// Shows brief usage information.
-        /// </summary>
-        private static void ShowUsage()
-        {
-            Console.WriteLine(GetUsageText());
-        }
-
-        /// <summary>
-        /// Gets the usage text.
-        /// </summary>
-        /// <returns>The usage text.</returns>
-        public static string GetUsageText()
-        {
-            return "Please provide folder path or file(s) to process\nUse --help for more information";
-        }
-
-        /// <summary>
-        /// Shows detailed help information.
-        /// </summary>
-        private static void ShowHelp()
-        {
-            Console.WriteLine(GetHelpText());
-        }
-
-        /// <summary>
-        /// Gets the help text.
-        /// </summary>
-        /// <returns>The help text.</returns>
-        public static string GetHelpText()
-        {
-            var version = Assembly.GetExecutingAssembly().GetName().Version;
-            var sb = new StringBuilder();
-            
-            sb.AppendLine($"HTML Minifier v{version.Major}.{version.Minor}.{version.Build}");
-            sb.AppendLine("A fast and efficient tool to minify HTML, Razor views, and Web Forms views.");
-            sb.AppendLine();
-            sb.AppendLine("USAGE:");
-            sb.AppendLine("  HtmlMinifier.exe <path> [options]");
-            sb.AppendLine();
-            sb.AppendLine("ARGUMENTS:");
-            sb.AppendLine("  <path>                    File or folder path to process (supports multiple)");
-            sb.AppendLine();
-            sb.AppendLine("OPTIONS:");
-            sb.AppendLine("  <number>                  Maximum line length (e.g., 60000)");
-            sb.AppendLine("  ignorehtmlcomments        Preserve HTML comments (for Angular, etc.)");
-            sb.AppendLine("  ignorejscomments          Preserve JavaScript comments");
-            sb.AppendLine("  ignoreknockoutcomments    Preserve Knockout.js comments");
-            sb.AppendLine("  --help, -h, /?            Show this help message");
-            sb.AppendLine("  --version, -v             Show version information");
-            sb.AppendLine();
-            sb.AppendLine("EXAMPLES:");
-            sb.AppendLine("  HtmlMinifier.exe \"C:\\MyProject\"");
-            sb.AppendLine("  HtmlMinifier.exe \"C:\\MyProject\" 60000");
-            sb.AppendLine("  HtmlMinifier.exe \"C:\\MyProject\" ignorehtmlcomments");
-            sb.AppendLine("  HtmlMinifier.exe \"file1.html\" \"file2.html\"");
-            sb.AppendLine();
-            sb.AppendLine("SUPPORTED FILE TYPES:");
-            sb.AppendLine("  .html, .htm, .cshtml, .vbhtml, .aspx, .ascx, .master, .inc");
-            sb.AppendLine();
-            sb.Append("For more information, visit: https://github.com/deanhume/html-minifier");
-            
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Shows version information.
-        /// </summary>
-        private static void ShowVersion()
-        {
-            Console.WriteLine(GetVersionText());
-        }
-
-        /// <summary>
-        /// Gets the version text.
-        /// </summary>
-        /// <returns>The version text.</returns>
-        public static string GetVersionText()
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var version = assembly.GetName().Version;
-            var titleAttr = assembly.GetCustomAttribute<AssemblyTitleAttribute>();
-            var copyrightAttr = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>();
-            var sb = new StringBuilder();
-            
-            sb.AppendLine($"{titleAttr?.Title ?? "HTML Minifier"} v{version.Major}.{version.Minor}.{version.Build}");
-            sb.AppendLine(copyrightAttr?.Copyright ?? "Copyright Dean Hume");
-            sb.Append("License: MIT");
-            
-            return sb.ToString();
         }
 
         /// <summary>
@@ -313,7 +222,7 @@ namespace HtmlMinifier
 
             lock (lockObject)
             {
-                Console.WriteLine($"Beginning minification of: {filePath}");
+                Console.WriteLine($"⚙  Processing: {Path.GetFileName(filePath)}");
             }
 
             try
@@ -329,8 +238,9 @@ namespace HtmlMinifier
                 {
                     lock (lockObject)
                     {
-                        Console.WriteLine($"Warning: Minification resulted in empty content for {filePath}. Skipping.");
+                        Console.WriteLine($"⚠  Warning: Minification resulted in empty content for {filePath}. Skipping.");
                     }
+                    Interlocked.Increment(ref totalFilesSkipped);
                     return;
                 }
 
@@ -343,13 +253,14 @@ namespace HtmlMinifier
                 // Thread-safe updates to totals
                 Interlocked.Add(ref totalProcessed, originalSize);
                 Interlocked.Add(ref totalSaved, newSize);
+                Interlocked.Increment(ref totalFilesProcessed);
 
                 var savedBytes = originalSize - newSize;
                 var percentSaved = originalSize > 0 ? (savedBytes * 100.0 / originalSize) : 0;
 
                 lock (lockObject)
                 {
-                    Console.WriteLine($"Minified file: {filePath} (Saved: {BytesToString(savedBytes)}, {percentSaved:F1}%)");
+                    Console.WriteLine($"✓  {Path.GetFileName(filePath),-40} {ConsoleReporter.BytesToString(originalSize),8} → {ConsoleReporter.BytesToString(newSize),8} ({percentSaved:F1}% saved)");
                 }
             }
             catch (UnauthorizedAccessException ex)
@@ -463,27 +374,6 @@ namespace HtmlMinifier
                 Console.WriteLine($"Error: Failed to minify HTML in {filePath} - {ex.Message}");
                 throw;
             }
-        }
-
-        /// <summary>
-        /// Converts bytes to a human readable string.
-        /// </summary>
-        /// <param name="byteCount">bytes</param>
-        /// <returns>A human readable string</returns>
-        private static string BytesToString(long byteCount)
-        {
-            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
-
-            if (byteCount == 0)
-                return "0" + suf[0];
-
-            long bytes = Math.Abs(byteCount);
-
-            int place = Convert.ToInt32(Math.Floor(Math.Log(bytes, 1024)));
-
-            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
-
-            return (Math.Sign(byteCount) * num).ToString() + suf[place];
         }
     }
 }

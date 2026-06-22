@@ -11,7 +11,7 @@ namespace HtmlMinifier.Tests
         public void GetUsageText_ShouldReturnNonEmptyString()
         {
             // Act
-            string usageText = Program.GetUsageText();
+            string usageText = ConsoleReporter.GetUsageText();
 
             // Assert
             Assert.IsNotNull(usageText);
@@ -22,7 +22,7 @@ namespace HtmlMinifier.Tests
         public void GetUsageText_ShouldContainExpectedMessages()
         {
             // Act
-            string usageText = Program.GetUsageText();
+            string usageText = ConsoleReporter.GetUsageText();
 
             // Assert
             Assert.IsTrue(usageText.Contains("Please provide folder path or file(s) to process"));
@@ -33,7 +33,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldReturnNonEmptyString()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsNotNull(helpText);
@@ -44,7 +44,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainVersion()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("HTML Minifier"));
@@ -55,7 +55,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainUsageSection()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("USAGE:"));
@@ -66,7 +66,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainArgumentsSection()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("ARGUMENTS:"));
@@ -78,7 +78,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainOptionsSection()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("OPTIONS:"));
@@ -93,7 +93,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainExamplesSection()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("EXAMPLES:"));
@@ -104,7 +104,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainSupportedFileTypes()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("SUPPORTED FILE TYPES:"));
@@ -117,7 +117,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldContainGitHubLink()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             Assert.IsTrue(helpText.Contains("github.com/deanhume/html-minifier"));
@@ -127,7 +127,7 @@ namespace HtmlMinifier.Tests
         public void GetVersionText_ShouldReturnNonEmptyString()
         {
             // Act
-            string versionText = Program.GetVersionText();
+            string versionText = ConsoleReporter.GetVersionText();
 
             // Assert
             Assert.IsNotNull(versionText);
@@ -138,7 +138,7 @@ namespace HtmlMinifier.Tests
         public void GetVersionText_ShouldContainVersionNumber()
         {
             // Act
-            string versionText = Program.GetVersionText();
+            string versionText = ConsoleReporter.GetVersionText();
 
             // Assert
             Assert.IsTrue(versionText.Contains("HTML") || versionText.Contains("Minifier"));
@@ -150,7 +150,7 @@ namespace HtmlMinifier.Tests
         public void GetVersionText_ShouldContainCopyright()
         {
             // Act
-            string versionText = Program.GetVersionText();
+            string versionText = ConsoleReporter.GetVersionText();
 
             // Assert
             Assert.IsTrue(versionText.Contains("Copyright"));
@@ -161,7 +161,7 @@ namespace HtmlMinifier.Tests
         public void GetVersionText_ShouldContainLicense()
         {
             // Act
-            string versionText = Program.GetVersionText();
+            string versionText = ConsoleReporter.GetVersionText();
 
             // Assert
             Assert.IsTrue(versionText.Contains("License: MIT"));
@@ -171,7 +171,7 @@ namespace HtmlMinifier.Tests
         public void GetVersionText_ShouldContainThreeLines()
         {
             // Act
-            string versionText = Program.GetVersionText();
+            string versionText = ConsoleReporter.GetVersionText();
 
             // Assert
             string[] lines = versionText.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None);
@@ -182,7 +182,7 @@ namespace HtmlMinifier.Tests
         public void GetHelpText_ShouldHaveProperFormatting()
         {
             // Act
-            string helpText = Program.GetHelpText();
+            string helpText = ConsoleReporter.GetHelpText();
 
             // Assert
             // Check for proper spacing with empty lines
