@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HtmlMinifier
 {
@@ -12,8 +15,9 @@ namespace HtmlMinifier
     /// </summary>
     public class Program
     {
-        public static long totalProcessed = 0;
-        public static long totalSaved = 0;
+        private static long totalProcessed = 0;
+        private static long totalSaved = 0;
+        private static readonly object lockObject = new object();
 
         static void Main(string[] args)
         {
@@ -220,8 +224,11 @@ namespace HtmlMinifier
         {
             try
             {
-                // Loop through the files in the folder and look for any of the following extensions
-                foreach (string folder in GetDirectories(folderPath))
+                // Collect all HTML files from all directories
+                var allHtmlFiles = new ConcurrentBag<string>();
+                var directories = GetDirectories(folderPath);
+
+                foreach (string folder in directories)
                 {
                     try
                     {
@@ -230,34 +237,55 @@ namespace HtmlMinifier
                         {
                             if (filePath.IsHtmlFile())
                             {
-                                try
-                                {
-                                    ProcessFile(features, filePath);
-                                }
-                                catch (UnauthorizedAccessException ex)
-                                {
-                                    Console.WriteLine($"Error: Access denied to file {filePath} - {ex.Message}");
-                                }
-                                catch (IOException ex)
-                                {
-                                    Console.WriteLine($"Error: IO error processing file {filePath} - {ex.Message}");
-                                }
-                                catch (Exception ex)
-                                {
-                                    Console.WriteLine($"Error: Failed to process file {filePath} - {ex.Message}");
-                                }
+                                allHtmlFiles.Add(filePath);
                             }
                         }
                     }
                     catch (UnauthorizedAccessException ex)
                     {
-                        Console.WriteLine($"Error: Access denied to directory {folder} - {ex.Message}");
+                        lock (lockObject)
+                        {
+                            Console.WriteLine($"Error: Access denied to directory {folder} - {ex.Message}");
+                        }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error: Failed to read directory {folder} - {ex.Message}");
+                        lock (lockObject)
+                        {
+                            Console.WriteLine($"Error: Failed to read directory {folder} - {ex.Message}");
+                        }
                     }
                 }
+
+                // Process all files in parallel
+                Parallel.ForEach(allHtmlFiles, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, filePath =>
+                {
+                    try
+                    {
+                        ProcessFile(features, filePath);
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        lock (lockObject)
+                        {
+                            Console.WriteLine($"Error: Access denied to file {filePath} - {ex.Message}");
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        lock (lockObject)
+                        {
+                            Console.WriteLine($"Error: IO error processing file {filePath} - {ex.Message}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        lock (lockObject)
+                        {
+                            Console.WriteLine($"Error: Failed to process file {filePath} - {ex.Message}");
+                        }
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -283,21 +311,26 @@ namespace HtmlMinifier
                 throw new FileNotFoundException($"File not found: {filePath}");
             }
 
-            Console.WriteLine($"Beginning minification of: {filePath}");
+            lock (lockObject)
+            {
+                Console.WriteLine($"Beginning minification of: {filePath}");
+            }
 
             try
             {
                 // File size before minify
                 var fileInfo = new FileInfo(filePath);
                 var originalSize = fileInfo.Length;
-                totalProcessed += originalSize;
 
                 // Minify contents
                 string minifiedContents = MinifyHtml(filePath, features);
 
                 if (string.IsNullOrEmpty(minifiedContents))
                 {
-                    Console.WriteLine($"Warning: Minification resulted in empty content for {filePath}. Skipping.");
+                    lock (lockObject)
+                    {
+                        Console.WriteLine($"Warning: Minification resulted in empty content for {filePath}. Skipping.");
+                    }
                     return;
                 }
 
@@ -306,26 +339,41 @@ namespace HtmlMinifier
 
                 // File size after minify
                 var newSize = new FileInfo(filePath).Length;
-                totalSaved += newSize;
+
+                // Thread-safe updates to totals
+                Interlocked.Add(ref totalProcessed, originalSize);
+                Interlocked.Add(ref totalSaved, newSize);
 
                 var savedBytes = originalSize - newSize;
                 var percentSaved = originalSize > 0 ? (savedBytes * 100.0 / originalSize) : 0;
 
-                Console.WriteLine($"Minified file: {filePath} (Saved: {BytesToString(savedBytes)}, {percentSaved:F1}%)");
+                lock (lockObject)
+                {
+                    Console.WriteLine($"Minified file: {filePath} (Saved: {BytesToString(savedBytes)}, {percentSaved:F1}%)");
+                }
             }
             catch (UnauthorizedAccessException ex)
             {
-                Console.WriteLine($"Error: Access denied to {filePath} - {ex.Message}");
+                lock (lockObject)
+                {
+                    Console.WriteLine($"Error: Access denied to {filePath} - {ex.Message}");
+                }
                 throw;
             }
             catch (IOException ex)
             {
-                Console.WriteLine($"Error: IO error with {filePath} - {ex.Message}");
+                lock (lockObject)
+                {
+                    Console.WriteLine($"Error: IO error with {filePath} - {ex.Message}");
+                }
                 throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: Failed to minify {filePath} - {ex.Message}");
+                lock (lockObject)
+                {
+                    Console.WriteLine($"Error: Failed to minify {filePath} - {ex.Message}");
+                }
                 throw;
             }
         }
