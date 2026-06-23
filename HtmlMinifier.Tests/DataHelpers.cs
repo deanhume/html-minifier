@@ -1,4 +1,4 @@
-﻿namespace HtmlMinifier.Tests
+namespace HtmlMinifier.Tests
 {
     public static class DataHelpers
     {
@@ -145,5 +145,14 @@
         public static string AttributeWhitespaceResult =
     "<div class=\"foo bar\">content</div>";
 
+        public static string GithubIssue49 =
+    "@model Dictionary<string, MyAssemblyName.Setting[]>\r\n@{\r\n    ViewData[\"Title\"] = \"Settings\";\r\n}\r\n<h1>Settings</h1>";
+
+        public static string GithubIssue49Result =
+            "@model Dictionary<string, MyAssemblyName.Setting[]>\r\n @{ ViewData[\"Title\"] = \"Settings\"; } <h1>Settings</h1>";
+
     }
 }
+
+
+

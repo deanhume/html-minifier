@@ -375,5 +375,19 @@ namespace HtmlMinifier.Tests
             // Assert
             Assert.AreEqual(minifiedHtml, expectedResult);
         }
+
+        [TestMethod]
+        public void GithubIssue49_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/49
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue49Result;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue49, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
     }
 }
