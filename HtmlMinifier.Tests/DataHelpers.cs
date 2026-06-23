@@ -127,5 +127,23 @@
         public static string GithubIssue30ComplexResult =
     "<!DOCTYPE html><!--[if IE 8]><html lang=\"fr\" class=\"ie8\"><![endif]--><!--[if IE 9]><html lang=\"fr\" class=\"ie9\"><![endif]--><!--[if !IE]><!--><html lang=\"fr\"><!--<![endif]-->";
 
+        public static string TextareaProtection =
+    "<div>\r\n<textarea>\r\nHello   World\r\n</textarea>\r\n</div>";
+
+        public static string TextareaProtectionResult =
+    "<div> <textarea>\r\nHello   World\r\n</textarea> </div>";
+
+        public static string CodeProtection =
+    "<p>\r\n    <code>  var x = 1;  </code>\r\n</p>";
+
+        public static string CodeProtectionResult =
+    "<p> <code>  var x = 1;  </code> </p>";
+
+        public static string AttributeWhitespace =
+    "<div class=\"  foo   bar  \">content</div>";
+
+        public static string AttributeWhitespaceResult =
+    "<div class=\"foo bar\">content</div>";
+
     }
 }

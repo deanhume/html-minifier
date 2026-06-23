@@ -29,14 +29,15 @@ The tool is a C# (.NET Framework 4.8) CLI that minifies HTML, Razor (`.cshtml`/`
 ## Key Conventions
 
 ### Minification pipeline order (in `MinifyHtml`)
-1. Remove JS comments from `<script>` blocks (unless `IgnoreJsComments`)
-2. Extract `<pre>` blocks using `{{PRE_TAG_CONTENT_N}}` placeholders to protect their contents
+1. Remove JS comments from `<script>` blocks (unless `IgnoreJsComments`) — regex uses `[^:|""|'\\]` character class to avoid matching `\//` in JS regex literals
+2. Extract `<pre>`, `<textarea>`, and `<code>` blocks using `{{PRE_TAG_CONTENT_N}}` placeholders to protect their whitespace
 3. Escape `/*` as `{{{SLASH_STAR}}}` before running the CSS multiline comment regex, then restore it afterward
 4. Replace `@:` lines with `<text>...</text>` tags (`ReplaceTextLine`)
 5. Remove `/// ...` (Razor triple-slash) and `// ...` (JS single-line) comments
-6. Collapse whitespace, remove whitespace around tags (`> <` → `><`)
-7. Remove HTML comments — with special exceptions for `<!--[if ...]>` (IE conditionals) and `<!-- #include virtual` — and optionally preserve `<!-- ko` (Knockout) comments
-8. Restore placeholders
+6. Collapse whitespace (`\s+` → ` `), remove whitespace around tags (`> <` → `><`)
+7. Normalise attribute value whitespace — trim leading/trailing spaces inside quoted attribute values
+8. Remove HTML comments — exceptions for `<!--[if ...]>` (IE conditionals), `<!--<![...]-->` (downlevel-revealed closing tags), `<!-->` (empty conditionals), and `<!-- #include virtual` — optionally preserve `<!-- ko` (Knockout) comments
+9. Restore placeholders
 
 ### Razor declaration handling
 - **`@model`** is extracted and inserted at the very top of the file.

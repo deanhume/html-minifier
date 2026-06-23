@@ -336,5 +336,44 @@ namespace HtmlMinifier.Tests
             // Assert
             Assert.AreEqual(minifiedHtml, expectedResult);
         }
+
+        [TestMethod]
+        public void TextareaTag_WhitespaceShouldBePreserved()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.TextareaProtectionResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.TextareaProtection, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void CodeTag_WhitespaceShouldBePreserved()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.CodeProtectionResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.CodeProtection, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void AttributeWhitespace_ShouldBeNormalised()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.AttributeWhitespaceResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.AttributeWhitespace, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
     }
 }
