@@ -109,6 +109,12 @@
         public static string GithubIssue38 = "<div>\r\n<pre>\r\nTEST\r\nHello\r\nWorld\r\n</pre>\r\n</div>";
         public static string GithubIssue38Result = "<div> <pre>\r\nTEST\r\nHello\r\nWorld\r\n</pre> </div>";
 
+        public static string GithubIssue47 =
+    "<script type=\"text/javascript\">\r\n    url += $('#field').val().replace(/\\//g, '').replace(/&/g, 'and').substring(0, 50) + '/';\r\n</script>";
+
+        public static string GithubIssue47Result =
+            "<script type=\"text/javascript\"> url += $('#field').val().replace(/\\//g, '').replace(/&/g, 'and').substring(0, 50) + '/'; </script>";
+
 
     }
 }

@@ -224,7 +224,7 @@ namespace HtmlMinifier
                 htmlContents = Regex.Replace(htmlContents, @"/// (.*?)\r?\n", "", RegexOptions.Singleline);
 
                 // Replace line comments
-                htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
+                htmlContents = Regex.Replace(htmlContents, @"(?<![/\\])// (.*?)\r?\n", "", RegexOptions.Singleline);
 
                 // Replace spaces between quotes
                 htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
@@ -321,7 +321,7 @@ namespace HtmlMinifier
                 {
                     var scriptBlock = match.Value;
 
-                    javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|']//(.*?)\r?\n", ""));
+                    javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|'\\]//(.*?)\r?\n", ""));
 
                 }
 
