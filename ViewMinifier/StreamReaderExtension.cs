@@ -240,11 +240,11 @@ namespace HtmlMinifier
                 {
                     if (features.IgnoreKnockoutComments)
                     {
-                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(?!ko .*)(?!\/ko)(.*?)-->", "");
+                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|<!|>|\s*#include))(?!ko .*)(?!\/ko)(.*?)-->", "");
                     }
                     else
                     {
-                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(.*?)-->", "");
+                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|<!|>|\s*#include))(.*?)-->", "");
                     }
                 }
 

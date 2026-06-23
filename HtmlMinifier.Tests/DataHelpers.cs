@@ -115,6 +115,17 @@
         public static string GithubIssue47Result =
             "<script type=\"text/javascript\"> url += $('#field').val().replace(/\\//g, '').replace(/&/g, 'and').substring(0, 50) + '/'; </script>";
 
+        public static string GithubIssue30 =
+    "<!--[if !IE]><!-->\r\n<html lang=\"fr\">\r\n<!--<![endif]-->";
+
+        public static string GithubIssue30Result =
+    "<!--[if !IE]><!--><html lang=\"fr\"><!--<![endif]-->";
+
+        public static string GithubIssue30Complex =
+    "<!DOCTYPE html>\r\n<!--[if IE 8]> <html lang=\"fr\" class=\"ie8\"> <![endif]-->\r\n<!--[if IE 9]> <html lang=\"fr\" class=\"ie9\"> <![endif]-->\r\n<!--[if !IE]><!-->\r\n<html lang=\"fr\">\r\n<!--<![endif]-->";
+
+        public static string GithubIssue30ComplexResult =
+    "<!DOCTYPE html><!--[if IE 8]><html lang=\"fr\" class=\"ie8\"><![endif]--><!--[if IE 9]><html lang=\"fr\" class=\"ie9\"><![endif]--><!--[if !IE]><!--><html lang=\"fr\"><!--<![endif]-->";
 
     }
 }
