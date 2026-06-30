@@ -294,5 +294,100 @@ namespace HtmlMinifier.Tests
             // Assert
             Assert.AreEqual(minifiedHtml, expectedResult);
         }
+
+        [TestMethod]
+        public void GithubIssue47_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/47
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue47Result;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue47, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void GithubIssue30_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/30
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue30Result;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue30, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void GithubIssue30Complex_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/30
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue30ComplexResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue30Complex, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void TextareaTag_WhitespaceShouldBePreserved()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.TextareaProtectionResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.TextareaProtection, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void CodeTag_WhitespaceShouldBePreserved()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.CodeProtectionResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.CodeProtection, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void AttributeWhitespace_ShouldBeNormalised()
+        {
+            // Arrange
+            string expectedResult = DataHelpers.AttributeWhitespaceResult;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.AttributeWhitespace, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void GithubIssue49_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/49
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue49Result;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue49, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
     }
 }

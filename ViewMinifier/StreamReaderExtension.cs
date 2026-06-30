@@ -203,9 +203,9 @@ namespace HtmlMinifier
                     htmlContents = RemoveJavaScriptComments(htmlContents);
                 }
 
-                // Extract <pre> contents
+                // Extract <pre>, <textarea> and <code> contents to protect their whitespace
                 var preTagContents = new List<string>();
-                htmlContents = Regex.Replace(htmlContents, @"<pre[^>]*>[\s\S]*?<\/pre>", match =>
+                htmlContents = Regex.Replace(htmlContents, @"<(?:pre|textarea|code)[^>]*>[\s\S]*?<\/(?:pre|textarea|code)>", match =>
                 {
                     preTagContents.Add(match.Value);
                     return $"{{{{PRE_TAG_CONTENT_{preTagContents.Count - 1}}}}}";
@@ -224,7 +224,7 @@ namespace HtmlMinifier
                 htmlContents = Regex.Replace(htmlContents, @"/// (.*?)\r?\n", "", RegexOptions.Singleline);
 
                 // Replace line comments
-                htmlContents = Regex.Replace(htmlContents, @"// (.*?)\r?\n", "", RegexOptions.Singleline);
+                htmlContents = Regex.Replace(htmlContents, @"(?<![/\\])// (.*?)\r?\n", "", RegexOptions.Singleline);
 
                 // Replace spaces between quotes
                 htmlContents = Regex.Replace(htmlContents, @"\s+", " ");
@@ -235,16 +235,20 @@ namespace HtmlMinifier
                 // Replace spaces between brackets
                 htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
 
+                // Normalize whitespace inside attribute values
+                htmlContents = Regex.Replace(htmlContents, @"=""([^"">]*)""", m =>
+                    "=\"" + m.Groups[1].Value.Trim() + "\"");
+
                 // Replace comments
                 if (!features.IgnoreHtmlComments)
                 {
                     if (features.IgnoreKnockoutComments)
                     {
-                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(?!ko .*)(?!\/ko)(.*?)-->", "");
+                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|<!|>|\s*#include))(?!ko .*)(?!\/ko)(.*?)-->", "");
                     }
                     else
                     {
-                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|\s*#include))(.*?)-->", "");
+                        htmlContents = Regex.Replace(htmlContents, @"<!--(?!(\[|<!|>|\s*#include))(.*?)-->", "");
                     }
                 }
 
@@ -321,7 +325,7 @@ namespace HtmlMinifier
                 {
                     var scriptBlock = match.Value;
 
-                    javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|']//(.*?)\r?\n", ""));
+                    javaScriptComments = javaScriptComments.Replace(scriptBlock, Regex.Replace(scriptBlock, @"[^:|""|'\\]//(.*?)\r?\n", ""));
 
                 }
 

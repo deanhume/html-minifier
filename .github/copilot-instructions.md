@@ -1,45 +1,60 @@
-# Copilot Instructions
+# HTML Minifier — Copilot Instructions
 
 ## Build & Test
 
 ```bash
-# Build the solution
-msbuild HtmlMinifier.sln /p:Configuration=Debug
-
-# Run all tests
+# Full test suite
 dotnet test HtmlMinifier.sln
 
-# Run a specific test by name
-dotnet test HtmlMinifier.sln --filter "FullyQualifiedName~MinificationTests.ReadHtml_WithStandardText_ShouldReturnCorrectly"
+# Single test by name
+dotnet test HtmlMinifier.Tests\HtmlMinifier.Tests.csproj --filter "FullyQualifiedName~GithubIssue54_ShouldReturnCorrectly"
+
+# Build
+dotnet build HtmlMinifier.sln
 ```
 
 ## Architecture
 
-This is a .NET Framework 4.8 console application that minifies HTML/Razor/WebForms files in-place.
+The tool is a C# (.NET Framework 4.8) CLI that minifies HTML, Razor (`.cshtml`/`.vbhtml`), and Web Forms (`.aspx`/`.ascx`/`.master`) files.
 
-- **ViewMinifier/** — Main application (outputs `HtmlMinifier.exe`)
-  - `Program.cs` — CLI entry point, file/directory traversal, argument parsing
-  - `StreamReaderExtension.cs` — Core minification engine (regex-based whitespace/comment removal, `<pre>` preservation, Razor declaration re-arrangement)
-  - `Features.cs` — Configuration parsed from CLI args (`IgnoreHtmlComments`, `IgnoreJsComments`, `IgnoreKnockoutComments`, `MaxLength`)
-  - `StringExtension.cs` — `IsHtmlFile()` extension for supported file types
-- **HtmlMinifier.Tests/** — MSTest unit tests with input/expected pairs in `Data/` folder
-
-The minification pipeline in `StreamReaderExtension.MinifyHtmlCode` follows this order:
-1. Remove JS comments from `<script>` blocks
-2. Extract and preserve `<pre>` tag content
-3. Strip CSS/multi-line comments
-4. Convert `@:` Razor text lines to `<text></text>`
-5. Collapse whitespace and remove line breaks between tags
-6. Remove HTML comments (respecting feature flags)
-7. Restore `<pre>` content
-8. Enforce max line length by splitting at `><` boundaries
-9. Re-arrange Razor declarations (`@model` to top, `@using`/`@inherits` on own lines)
+**Data flow:**
+1. `Program.cs` — parses CLI args, builds a `Features` config, walks file/folder paths, calls `StreamReaderExtension.MinifyHtmlCode`, writes output in-place.
+2. `Features.cs` — parses all CLI flags (`ignorehtmlcomments`, `ignorejscomments`, `ignoreknockoutcomments`, numeric `MaxLength`) from `string[] args`.
+3. `StreamReaderExtension.cs` — all minification logic lives here as static methods. `MinifyHtmlCode(string, Features)` is the main entry point; it calls:
+   - `MinifyHtml` — Regex-based whitespace/comment stripping
+   - `EnsureMaxLength` — splits output at `><` boundaries if over limit
+   - `ReArrangeDeclarations` — moves `@model` to top; adds newline after `@using`/`@inherits`
+4. `StringExtension.cs` — `IsHtmlFile()` extension method for file extension gating.
 
 ## Key Conventions
 
-- Tests use the Arrange/Act/Assert pattern with test data loaded from `HtmlMinifier.Tests/Data/` (pairs of `Foo.txt` input and `FooResult.txt` expected output)
-- The tool modifies files **in-place** — it overwrites the original with minified content
-- All public methods have XML doc comments
-- Feature flags are positional CLI arguments (not `--flag` style): `ignorehtmlcomments`, `ignorejscomments`, `ignoreknockoutcomments`
-- Supported file extensions: `.cshtml`, `.vbhtml`, `.aspx`, `.html`, `.htm`, `.ascx`, `.master`, `.inc`
-- Static fields `totalProcessed`/`totalSaved` on `Program` track cumulative byte counts across a run
+### Minification pipeline order (in `MinifyHtml`)
+1. Remove JS comments from `<script>` blocks (unless `IgnoreJsComments`) — regex uses `[^:|""|'\\]` character class to avoid matching `\//` in JS regex literals
+2. Extract `<pre>`, `<textarea>`, and `<code>` blocks using `{{PRE_TAG_CONTENT_N}}` placeholders to protect their whitespace
+3. Escape `/*` as `{{{SLASH_STAR}}}` before running the CSS multiline comment regex, then restore it afterward
+4. Replace `@:` lines with `<text>...</text>` tags (`ReplaceTextLine`)
+5. Remove `/// ...` (Razor triple-slash) and `// ...` (JS single-line) comments
+6. Collapse whitespace (`\s+` → ` `), remove whitespace around tags (`> <` → `><`)
+7. Normalise attribute value whitespace — trim leading/trailing spaces inside quoted attribute values
+8. Remove HTML comments — exceptions for `<!--[if ...]>` (IE conditionals), `<!--<![...]-->` (downlevel-revealed closing tags), `<!-->` (empty conditionals), and `<!-- #include virtual` — optionally preserve `<!-- ko` (Knockout) comments
+9. Restore placeholders
+
+### Razor declaration handling
+- **`@model`** is extracted and inserted at the very top of the file.
+- **`@using`** and **`@inherits`** get a `\r\n` appended but stay in place.
+
+### Testing patterns
+- Tests call `StreamReaderExtension.MinifyHtmlCode(string, Features)` directly — no file I/O.
+- All test HTML strings and expected results live in `HtmlMinifier.Tests/DataHelpers.cs` as static string constants (raw `\r\n`-delimited).
+- Bug-fix tests follow the naming pattern `GithubIssueNN_ShouldReturnCorrectly` with a comment linking to the issue URL.
+- `noFeatures` is the canonical zero-config `Features` instance: `new Features(new string[0])`.
+
+### Adding a new feature flag
+1. Add a property to `Features.cs`.
+2. Parse it in the `Features` constructor using `args.Contains(...)`.
+3. Wire up the behavior in `StreamReaderExtension.MinifyHtml`.
+4. Add tests in `ArgumentsTests.cs` (flag parsing) and `MinificationTests.cs` (behavior).
+
+### Adding a new file extension
+1. Update `StringExtension.IsHtmlFile()`.
+2. Add a test in `FileExtensionTests.cs`.

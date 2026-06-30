@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML Minifier — Fast HTML, Razor & Web Forms Minification</title>
+  <meta name="description" content="A fast, open-source command-line tool to minify HTML, Razor views, and Web Forms. Remove whitespace, strip comments, and ship smaller files.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --accent2: #3fb950;
+      --accent3: #d2a8ff;
+      --accent4: #ffa657;
+      --danger: #f85149;
+      --gradient: linear-gradient(135deg, #58a6ff 0%, #d2a8ff 100%);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    /* ── Nav ─────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--accent);
+      color: #000 !important;
+      font-weight: 600 !important;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      transition: opacity 0.2s !important;
+    }
+    .nav-cta:hover { opacity: 0.85; color: #000 !important; }
+
+    /* ── Hero ────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 7rem 2rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88,166,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(88,166,255,0.1);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 span {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform 0.15s, opacity 0.15s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Stats bar ───────────────────────── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+    }
+    .stat {
+      flex: 1;
+      min-width: 160px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-value {
+      display: block;
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.85rem; color: var(--muted); }
+
+    /* ── Section wrappers ────────────────── */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.75rem, 3vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── Before / After ──────────────────── */
+    .diff-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 700px) { .diff-wrap { grid-template-columns: 1fr; } }
+    .code-block {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1rem;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .code-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #f85149; }
+    .dot-green { background: #3fb950; }
+    .code-header .dots { display: flex; gap: 6px; }
+    .badge-before { color: var(--danger); }
+    .badge-after { color: var(--accent2); }
+    .code-block pre {
+      padding: 1.25rem;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: var(--text);
+    }
+    .code-block pre .tag { color: #7ee787; }
+    .code-block pre .attr { color: #79c0ff; }
+    .code-block pre .val { color: #a5d6ff; }
+    .code-block pre .razor { color: var(--accent3); }
+    .savings-note {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    /* ── Features grid ───────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    .feature-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .feature-card p { font-size: 0.9rem; color: var(--muted); }
+
+    /* ── CLI section ─────────────────────── */
+    .cli-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .cli-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg3);
+      overflow-x: auto;
+    }
+    .cli-tab {
+      padding: 0.65rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      white-space: nowrap;
+      transition: color 0.15s;
+      border-bottom: 2px solid transparent;
+    }
+    .cli-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .cli-panel { display: none; padding: 1.5rem; }
+    .cli-panel.active { display: block; }
+    .cli-panel pre {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .cli-panel .prompt { color: var(--accent2); user-select: none; }
+    .cli-panel .comment { color: var(--muted); }
+    .cli-panel .flag { color: var(--accent4); }
+    .cli-panel .path { color: var(--accent3); }
+
+    /* ── Installation ────────────────────── */
+    .install-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .install-step {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: #000;
+    }
+    .install-step h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .install-step p { font-size: 0.875rem; color: var(--muted); }
+    .install-step code {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    /* ── Preserved section ───────────────── */
+    .preserved-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0.75rem;
+    }
+    .preserved-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem 1rem;
+      font-size: 0.9rem;
+    }
+    .preserved-item .check {
+      color: var(--accent2);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Footer ──────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+
+    /* ── Misc ────────────────────────────── */
+    .alt-bg { background: var(--bg2); }
+    .text-center { text-align: center; }
+    .mb-0 { margin-bottom: 0; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero > * { animation: fadeUp 0.5s ease both; }
+    .hero > *:nth-child(1) { animation-delay: 0.05s; }
+    .hero > *:nth-child(2) { animation-delay: 0.15s; }
+    .hero > *:nth-child(3) { animation-delay: 0.25s; }
+    .hero > *:nth-child(4) { animation-delay: 0.35s; }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ───────────────────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#">&lt;/&gt; HTML Minifier</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="https://github.com/deanhume/html-minifier" target="_blank" rel="noopener">GitHub</a></li>
+    <li><a class="nav-cta" href="https://github.com/deanhume/html-minifier/releases" target="_blank" rel="noopener">Download</a></li>
+  </ul>
+</nav>
+
+<!-- ── Hero ──────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-badge">⚡ Open Source &middot; MIT License</div>
+  <h1>Ship <span>smaller HTML</span>,<br>faster pages.</h1>
+  <p>A fast command-line tool that minifies HTML, Razor views, and Web Forms — stripping whitespace and comments without breaking your code.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://github.com/deanhume/html-minifier/releases" target="_blank" rel="noopener">
+      ↓ Download Latest
+    </a>
+    <a class="btn btn-secondary" href="https://github.com/deanhume/html-minifier" target="_blank" rel="noopener">
+      ★ View on GitHub
+    </a>
+  </div>
+</header>
+
+<!-- ── Stats bar ─────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-value">8</span>
+    <span class="stat-label">Supported file types</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">4–8×</span>
+    <span class="stat-label">Faster with parallel processing</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">10+</span>
+    <span class="stat-label">Years in production</span>
+  </div>
+  <div class="stat">
+    <span class="stat-value">MIT</span>
+    <span class="stat-label">Free & open source</span>
+  </div>
+</div>
+
+<!-- ── Before / After ────────────────────────────────── -->
+<section id="demo">
+  <div class="container">
+    <div class="section-label">Live example</div>
+    <h2 class="section-title">See the difference</h2>
+    <p class="section-sub">Whitespace, comments, and redundant spacing removed in one pass.</p>
+    <div class="diff-wrap">
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-red"></div></div>
+          <span class="badge-before">Before &nbsp;4,218 bytes</span>
+        </div>
+        <pre>
+<span class="tag">&lt;!-- Navigation menu --&gt;</span>
+<span class="tag">&lt;h2&gt;</span>
+    Admin Menu
+<span class="tag">&lt;/h2&gt;</span>
+<span class="tag">&lt;ul&gt;</span>
+    <span class="tag">&lt;li&gt;</span>
+        <span class="razor">@Html.ActionLink(</span><span class="val">"Edit entries"</span>,
+            <span class="val">"List"</span>, <span class="val">"Admin"</span><span class="razor">)</span>
+    <span class="tag">&lt;/li&gt;</span>
+    <span class="tag">&lt;li&gt;</span>
+        <span class="razor">@Html.ActionLink(</span><span class="val">"View Comments"</span>,
+            <span class="val">"CommentList"</span>, <span class="val">"Admin"</span><span class="razor">)</span>
+    <span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span>
+        </pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header">
+          <div class="dots"><div class="dot dot-green"></div></div>
+          <span class="badge-after">After &nbsp;1,876 bytes</span>
+        </div>
+        <pre>
+<span class="tag">&lt;h2&gt;</span> Admin Menu<span class="tag">&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;</span><span class="razor">@Html.ActionLink(</span><span class="val">"Edit entries"</span>, <span class="val">"List"</span>, <span class="val">"Admin"</span><span class="razor">)</span><span class="tag">&lt;/li&gt;&lt;li&gt;</span><span class="razor">@Html.ActionLink(</span><span class="val">"View Comments"</span>, <span class="val">"CommentList"</span>, <span class="val">"Admin"</span><span class="razor">)</span><span class="tag">&lt;/li&gt;&lt;/ul&gt;</span>
+        </pre>
+      </div>
+    </div>
+    <p class="savings-note">✓ 55% smaller — no code changes, no risk.</p>
+  </div>
+</section>
+
+<!-- ── Features ───────────────────────────────────────── -->
+<section id="features" class="alt-bg">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need,<br>nothing you don't.</h2>
+    <p class="section-sub">Built to integrate cleanly with your existing .NET build pipeline.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Parallel Processing</h3>
+        <p>Utilises all available CPU cores to process large directory trees 4–8× faster than single-threaded alternatives.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Framework Aware</h3>
+        <p>Preserves Knockout.js <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">&lt;!-- ko --&gt;</code> comments, Angular directives, and IE conditional comments without extra config.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Safe by Default</h3>
+        <p>Content inside <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">&lt;pre&gt;</code>, <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">&lt;textarea&gt;</code>, and <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">&lt;code&gt;</code> tags is always preserved exactly as written.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Selective Minification</h3>
+        <p>Opt out of individual features — keep HTML comments, JS comments, or Knockout comments with simple flags.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📐</div>
+        <h3>Line Length Control</h3>
+        <p>Set a maximum line length to prevent hitting compiler limits (e.g. the 65K character limit in older ASP.NET).</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔄</div>
+        <h3>CI/CD Ready</h3>
+        <p>Zero dependencies, single executable. Plug straight into MSBuild, Azure DevOps, or GitHub Actions post-build steps.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✂️</div>
+        <h3>Razor Support</h3>
+        <p>Handles <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">@model</code>, <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">@using</code>, and <code style="font-size:0.8em;background:#21262d;padding:2px 5px;border-radius:4px;color:#ffa657">@inherits</code> declarations correctly — they stay on their own lines so the Razor engine never chokes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <h3>Flexible Input</h3>
+        <p>Point at a single file, a list of files, or an entire folder tree. Minification happens in-place with detailed reporting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── What's preserved ───────────────────────────────── -->
+<section id="preserved">
+  <div class="container">
+    <div class="section-label">Safety</div>
+    <h2 class="section-title">Always preserved</h2>
+    <p class="section-sub">The minifier knows what not to touch.</p>
+    <div class="preserved-list">
+      <div class="preserved-item"><span class="check">✓</span><span><code style="color:#ffa657;font-size:0.85em">&lt;pre&gt;</code> tag contents &amp; whitespace</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span><code style="color:#ffa657;font-size:0.85em">&lt;textarea&gt;</code> contents &amp; whitespace</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span><code style="color:#ffa657;font-size:0.85em">&lt;code&gt;</code> contents &amp; whitespace</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>IE conditional comments <code style="color:#ffa657;font-size:0.85em">&lt;!--[if IE]&gt;</code></span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>Downlevel-revealed conditionals <code style="color:#ffa657;font-size:0.85em">&lt;!--&gt;</code></span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>ASP.NET <code style="color:#ffa657;font-size:0.85em">#include virtual</code> comments</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>Knockout.js <code style="color:#ffa657;font-size:0.85em">&lt;!-- ko --&gt;</code> bindings (opt-in)</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>Razor <code style="color:#ffa657;font-size:0.85em">@model</code> / <code style="color:#ffa657;font-size:0.85em">@using</code> declarations</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>Attribute values (whitespace normalised)</span></div>
+      <div class="preserved-item"><span class="check">✓</span><span>UTF-8 BOM in output files</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Usage ──────────────────────────────────────────── -->
+<section id="usage" class="alt-bg">
+  <div class="container">
+    <div class="section-label">Usage</div>
+    <h2 class="section-title">Simple CLI, powerful options.</h2>
+    <p class="section-sub">One tool, one command. Scale from a single file to an entire project.</p>
+    <div class="cli-wrap">
+      <div class="cli-tabs">
+        <button class="cli-tab active" onclick="showTab('basic', this)">Basic</button>
+        <button class="cli-tab" onclick="showTab('comments', this)">Comments</button>
+        <button class="cli-tab" onclick="showTab('linelength', this)">Line length</button>
+        <button class="cli-tab" onclick="showTab('multiple', this)">Multiple targets</button>
+        <button class="cli-tab" onclick="showTab('msbuild', this)">MSBuild</button>
+      </div>
+      <div id="tab-basic" class="cli-panel active">
+        <pre><span class="comment"># Minify all HTML files in a folder (recursive)</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\MyProject\Views"</span>
+
+<span class="comment"># Minify a single file</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\MyProject\Views\Home\Index.cshtml"</span></pre>
+      </div>
+      <div id="tab-comments" class="cli-panel">
+        <pre><span class="comment"># Preserve HTML comments (useful for Angular / Knockout directive comments)</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\Views"</span> <span class="flag">ignorehtmlcomments</span>
+
+<span class="comment"># Preserve JavaScript comments</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\Views"</span> <span class="flag">ignorejscomments</span>
+
+<span class="comment"># Preserve Knockout.js <!-- ko --> / <!-- /ko --> comments only</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\Views"</span> <span class="flag">ignoreknockoutcomments</span></pre>
+      </div>
+      <div id="tab-linelength" class="cli-panel">
+        <pre><span class="comment"># Limit output to 60,000 characters per line</span>
+<span class="comment"># Prevents hitting the 65K compiler limit in older ASP.NET</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\Views"</span> <span class="flag">60000</span></pre>
+      </div>
+      <div id="tab-multiple" class="cli-panel">
+        <pre><span class="comment"># Minify two separate folders</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\Project\Views"</span> <span class="path">"C:\Project\Areas"</span>
+
+<span class="comment"># Minify specific files</span>
+<span class="prompt">$</span> HtmlMinifier.exe <span class="path">"C:\Views\Index.html"</span> <span class="path">"C:\Views\About.html"</span></pre>
+      </div>
+      <div id="tab-msbuild" class="cli-panel">
+        <pre><span class="comment">&lt;!-- Add to your .csproj to minify on every Release build --&gt;</span>
+<span class="tag">&lt;Target</span> <span class="attr">Name</span>=<span class="val">"MinifyHtml"</span> <span class="attr">AfterTargets</span>=<span class="val">"Build"</span>
+        <span class="attr">Condition</span>=<span class="val">"'$(Configuration)' == 'Release'"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;Exec</span> <span class="attr">Command</span>=<span class="val">"HtmlMinifier.exe &quot;$(WebProjectOutputDir)&quot;"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;/Target&gt;</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Install ────────────────────────────────────────── -->
+<section id="install">
+  <div class="container">
+    <div class="section-label">Installation</div>
+    <h2 class="section-title">Up and running in minutes.</h2>
+    <p class="section-sub">No runtime, no installer. Just download and run.</p>
+    <div class="install-grid">
+      <div class="install-step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>Download the release</h3>
+          <p>Grab the latest <code>HtmlMinifier.exe</code> from the <a href="https://github.com/deanhume/html-minifier/releases" style="color:var(--accent)">releases page</a>.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>Add to your PATH</h3>
+          <p>Place the executable somewhere on your <code>PATH</code>, or reference it directly from your build scripts.</p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>Run it</h3>
+          <p>Point it at a file or folder: <code>HtmlMinifier.exe "C:\Views"</code> and you're done.</p>
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <a class="btn btn-primary" href="https://github.com/deanhume/html-minifier/releases" target="_blank" rel="noopener" style="margin: 0 auto">
+        ↓ Download Latest Release
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ────────────────────────────────────────── -->
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/deanhume/html-minifier" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://github.com/deanhume/html-minifier/releases" target="_blank" rel="noopener">Releases</a>
+    <a href="https://github.com/deanhume/html-minifier/issues" target="_blank" rel="noopener">Issues</a>
+    <a href="https://github.com/deanhume/html-minifier/blob/master/LICENSE.md" target="_blank" rel="noopener">MIT License</a>
+    <a href="https://deanhume.com" target="_blank" rel="noopener">deanhume.com</a>
+  </div>
+  <p>Copyright &copy; 2013–2025 <a href="https://deanhume.com" target="_blank" rel="noopener">Dean Hume</a>. Released under the MIT License.</p>
+</footer>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.cli-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.cli-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

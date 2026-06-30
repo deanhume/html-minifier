@@ -1,4 +1,4 @@
-﻿namespace HtmlMinifier.Tests
+namespace HtmlMinifier.Tests
 {
     public static class DataHelpers
     {
@@ -109,6 +109,50 @@
         public static string GithubIssue38 = "<div>\r\n<pre>\r\nTEST\r\nHello\r\nWorld\r\n</pre>\r\n</div>";
         public static string GithubIssue38Result = "<div> <pre>\r\nTEST\r\nHello\r\nWorld\r\n</pre> </div>";
 
+        public static string GithubIssue47 =
+    "<script type=\"text/javascript\">\r\n    url += $('#field').val().replace(/\\//g, '').replace(/&/g, 'and').substring(0, 50) + '/';\r\n</script>";
+
+        public static string GithubIssue47Result =
+            "<script type=\"text/javascript\"> url += $('#field').val().replace(/\\//g, '').replace(/&/g, 'and').substring(0, 50) + '/'; </script>";
+
+        public static string GithubIssue30 =
+    "<!--[if !IE]><!-->\r\n<html lang=\"fr\">\r\n<!--<![endif]-->";
+
+        public static string GithubIssue30Result =
+    "<!--[if !IE]><!--><html lang=\"fr\"><!--<![endif]-->";
+
+        public static string GithubIssue30Complex =
+    "<!DOCTYPE html>\r\n<!--[if IE 8]> <html lang=\"fr\" class=\"ie8\"> <![endif]-->\r\n<!--[if IE 9]> <html lang=\"fr\" class=\"ie9\"> <![endif]-->\r\n<!--[if !IE]><!-->\r\n<html lang=\"fr\">\r\n<!--<![endif]-->";
+
+        public static string GithubIssue30ComplexResult =
+    "<!DOCTYPE html><!--[if IE 8]><html lang=\"fr\" class=\"ie8\"><![endif]--><!--[if IE 9]><html lang=\"fr\" class=\"ie9\"><![endif]--><!--[if !IE]><!--><html lang=\"fr\"><!--<![endif]-->";
+
+        public static string TextareaProtection =
+    "<div>\r\n<textarea>\r\nHello   World\r\n</textarea>\r\n</div>";
+
+        public static string TextareaProtectionResult =
+    "<div> <textarea>\r\nHello   World\r\n</textarea> </div>";
+
+        public static string CodeProtection =
+    "<p>\r\n    <code>  var x = 1;  </code>\r\n</p>";
+
+        public static string CodeProtectionResult =
+    "<p> <code>  var x = 1;  </code> </p>";
+
+        public static string AttributeWhitespace =
+    "<div class=\"  foo   bar  \">content</div>";
+
+        public static string AttributeWhitespaceResult =
+    "<div class=\"foo bar\">content</div>";
+
+        public static string GithubIssue49 =
+    "@model Dictionary<string, MyAssemblyName.Setting[]>\r\n@{\r\n    ViewData[\"Title\"] = \"Settings\";\r\n}\r\n<h1>Settings</h1>";
+
+        public static string GithubIssue49Result =
+            "@model Dictionary<string, MyAssemblyName.Setting[]>\r\n @{ ViewData[\"Title\"] = \"Settings\"; } <h1>Settings</h1>";
 
     }
 }
+
+
+
