@@ -231,8 +231,13 @@ namespace HtmlMinifier
                 var fileInfo = new FileInfo(filePath);
                 var originalSize = fileInfo.Length;
 
+                // Detect the source encoding so it can be preserved on write. Files
+                // encoded in a non-Unicode codepage (e.g. Windows-1251) would otherwise
+                // be decoded/written as UTF-8 and corrupted. See GitHub issue #62.
+                Encoding encoding = EncodingHelper.DetectEncoding(filePath);
+
                 // Minify contents
-                string minifiedContents = MinifyHtml(filePath, features);
+                string minifiedContents = MinifyHtml(filePath, features, encoding);
 
                 if (string.IsNullOrEmpty(minifiedContents))
                 {
@@ -244,8 +249,8 @@ namespace HtmlMinifier
                     return;
                 }
 
-                // Write to the same file
-                File.WriteAllText(filePath, minifiedContents, new UTF8Encoding(true));
+                // Write to the same file using the original encoding (preserving any BOM).
+                File.WriteAllText(filePath, minifiedContents, encoding);
 
                 // File size after minify
                 var newSize = new FileInfo(filePath).Length;
@@ -342,6 +347,20 @@ namespace HtmlMinifier
         /// </returns>
         public static string MinifyHtml(string filePath, Features features)
         {
+            return MinifyHtml(filePath, features, EncodingHelper.DetectEncoding(filePath));
+        }
+
+        /// <summary>
+        /// Minifies the contents of the given view using the supplied encoding.
+        /// </summary>
+        /// <param name="filePath"> The file path. </param>
+        /// <param name="features"> The features to apply. </param>
+        /// <param name="encoding"> The encoding used to read the file. </param>
+        /// <returns>
+        /// The <see cref="string"/>.
+        /// </returns>
+        public static string MinifyHtml(string filePath, Features features, Encoding encoding)
+        {
             if (string.IsNullOrWhiteSpace(filePath))
             {
                 throw new ArgumentException("File path cannot be empty", nameof(filePath));
@@ -352,9 +371,16 @@ namespace HtmlMinifier
                 throw new ArgumentNullException(nameof(features));
             }
 
+            if (encoding == null)
+            {
+                throw new ArgumentNullException(nameof(encoding));
+            }
+
             try
             {
-                using (var reader = new StreamReader(filePath))
+                // detectEncodingFromByteOrderMarks lets the reader strip and honour a BOM
+                // when present, while falling back to the detected encoding otherwise.
+                using (var reader = new StreamReader(filePath, encoding, detectEncodingFromByteOrderMarks: true))
                 {
                     return reader.MinifyHtmlCode(features);
                 }

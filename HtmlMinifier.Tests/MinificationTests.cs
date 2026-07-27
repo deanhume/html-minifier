@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace HtmlMinifier.Tests
 {
@@ -388,6 +389,50 @@ namespace HtmlMinifier.Tests
 
             // Assert
             Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
+        public void GithubIssue62_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/62
+            // A file encoded in a non-Unicode codepage (Windows-1251) that declares its
+            // charset in a <meta> tag should stay readable after minification.
+            // Arrange
+            Encoding win1251 = Encoding.GetEncoding(1251);
+            // "Привет мир" expressed as Unicode escapes so the test source encoding is irrelevant.
+            string cyrillicText = "\u041F\u0440\u0438\u0432\u0435\u0442 \u043C\u0438\u0440";
+            string cyrillicHtml =
+                "<html>\r\n" +
+                "  <head>\r\n" +
+                "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1251\" />\r\n" +
+                "  </head>\r\n" +
+                "  <body>\r\n" +
+                "    <p>" + cyrillicText + "</p>\r\n" +
+                "  </body>\r\n" +
+                "</html>";
+
+            string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".html");
+            File.WriteAllText(tempFile, cyrillicHtml, win1251);
+
+            try
+            {
+                // Act
+                Program.ProcessFile(noFeatures, tempFile);
+
+                // Assert - read the minified file back using its original codepage and
+                // confirm the Cyrillic text survived (it would be replaced with U+FFFD
+                // '?' characters if the file was decoded/written as UTF-8).
+                string result = File.ReadAllText(tempFile, win1251);
+                StringAssert.Contains(result, cyrillicText);
+                Assert.IsFalse(result.Contains("\uFFFD"), "Output contains Unicode replacement characters - encoding was corrupted.");
+            }
+            finally
+            {
+                if (File.Exists(tempFile))
+                {
+                    File.Delete(tempFile);
+                }
+            }
         }
     }
 }
