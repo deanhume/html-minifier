@@ -24,7 +24,7 @@ namespace HtmlMinifier.Tests
         public static string GithubIssue10 =
             "@using ClassLibrary1\r\n@model IList<GenericViewModel>\r\n\r\n<article class=\"list-widget list-widget--col2\">\r\n  <h1 class=\"list-widget__title\">Title</h1>\r\n  @if (Model!= null && Model.Count > 0)\r\n  {\r\n   <ul class=\"list-widget__list\">\r\n     @foreach (var item in Model)\r\n     {\r\n       <li class=\"list-widget__list-item\">\r\n        <a href=\"@item.Url\" class=\"list-widget__item-link\">\r\n          <em class=\"list-widget__list-item-info\">@item.SubTitle</em>\r\n          <span>@item.Title</span>\r\n        </a>\r\n      </li>        \r\n     }\r\n  </ul>  \r\n  }  \r\n</article>";
 
-        public static string GithubIssue10Result = "@model IList<GenericViewModel>\r\n@using ClassLibrary1 \r\n<article class=\"list-widget list-widget--col2\"><h1 class=\"list-widget__title\">Title</h1> @if (Model!= null && Model.Count > 0) { <ul class=\"list-widget__list\"> @foreach (var item in Model) { <li class=\"list-widget__list-item\"><a href=\"@item.Url\" class=\"list-widget__item-link\"><em class=\"list-widget__list-item-info\">@item.SubTitle</em><span>@item.Title</span></a></li> } </ul> } </article>";
+        public static string GithubIssue10Result = "@model IList<GenericViewModel>\r\n@using ClassLibrary1 \r\n<article class=\"list-widget list-widget--col2\"><h1 class=\"list-widget__title\">Title</h1> @if (Model!= null && Model.Count > 0) { <ul class=\"list-widget__list\"> @foreach (var item in Model) { <li class=\"list-widget__list-item\"><a href=\"@item.Url\" class=\"list-widget__item-link\"><em class=\"list-widget__list-item-info\">@item.SubTitle</em> <span>@item.Title</span></a></li> } </ul> } </article>";
 
         public static string GithubIssue13 =
             "@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>\r\n@{\r\n    Layout = \"Views/Shared/_Layout.cshtml\";\r\n}\r\n\r\n<h1>Looks like something went wrong.</h1>\r\n\r\n<p>Sorry, we are experiencing technical difficulties. We are working on getting this problem resolved. Sorry for any inconvenience!</p>";
@@ -150,6 +150,12 @@ namespace HtmlMinifier.Tests
 
         public static string GithubIssue49Result =
             "@model Dictionary<string, MyAssemblyName.Setting[]>\r\n @{ ViewData[\"Title\"] = \"Settings\"; } <h1>Settings</h1>";
+
+        public static string GithubIssue59 =
+    "<p>\r\n    <a href=\"https://akapuma.info\">https://akapuma.info</a>\r\n    <a href=\"https://akapumaspaellachannel.de\">https://akapumaspaellachannel.de</a>\r\n</p>";
+
+        public static string GithubIssue59Result =
+            "<p><a href=\"https://akapuma.info\">https://akapuma.info</a> <a href=\"https://akapumaspaellachannel.de\">https://akapumaspaellachannel.de</a></p>";
 
     }
 }

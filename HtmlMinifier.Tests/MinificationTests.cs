@@ -392,6 +392,22 @@ namespace HtmlMinifier.Tests
         }
 
         [TestMethod]
+        public void GithubIssue59_ShouldReturnCorrectly()
+        {
+            // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/59
+            // Whitespace between two adjacent inline elements (e.g. two links) is
+            // significant and must be preserved as a single space.
+            // Arrange
+            string expectedResult = DataHelpers.GithubIssue59Result;
+
+            // Act
+            string minifiedHtml = StreamReaderExtension.MinifyHtmlCode(DataHelpers.GithubIssue59, noFeatures);
+
+            // Assert
+            Assert.AreEqual(minifiedHtml, expectedResult);
+        }
+
+        [TestMethod]
         public void GithubIssue62_ShouldReturnCorrectly()
         {
             // A fix for a Github issue - https://github.com/deanhume/html-minifier/issues/62

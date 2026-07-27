@@ -232,8 +232,22 @@ namespace HtmlMinifier
                 // Replace line breaks
                 htmlContents = Regex.Replace(htmlContents, @"\s*\n\s*", "\n");
 
+                // Preserve a single significant space between two adjacent inline elements
+                // (e.g. two links). This whitespace is visible and must survive the bracket
+                // rule below, which otherwise strips all whitespace between tags.
+                // See https://github.com/deanhume/html-minifier/issues/59
+                const string inlineTags = "a|abbr|acronym|b|bdi|bdo|big|button|cite|code|data|dfn|em|font|i|kbd|label|mark|q|rp|rt|ruby|s|samp|small|span|strike|strong|sub|sup|time|tt|u|var|wbr";
+                htmlContents = Regex.Replace(
+                    htmlContents,
+                    @"(</(?:" + inlineTags + @")>)\s+(?=<(?:" + inlineTags + @")[\s/>])",
+                    "$1{{{INLINE_SPACE}}}",
+                    RegexOptions.IgnoreCase);
+
                 // Replace spaces between brackets
                 htmlContents = Regex.Replace(htmlContents, @"\s*\>\s*\<\s*", "><");
+
+                // Restore the significant inline whitespace protected above
+                htmlContents = htmlContents.Replace("{{{INLINE_SPACE}}}", " ");
 
                 // Normalize whitespace inside attribute values
                 htmlContents = Regex.Replace(htmlContents, @"=""([^"">]*)""", m =>
