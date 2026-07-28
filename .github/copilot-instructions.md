@@ -17,6 +17,15 @@ dotnet build HtmlMinifier.sln
 
 The tool is a C# (.NET Framework 4.8) CLI that minifies HTML, Razor (`.cshtml`/`.vbhtml`), and Web Forms (`.aspx`/`.ascx`/`.master`) files.
 
+> **Design decision — not a `dotnet` global tool.** Converting this project to a
+> `dotnet tool install --global` package (SDK-style, targeting modern .NET) was
+> evaluated and deliberately rejected. Packaging it as a global tool / self-contained
+> executable produces a large (~70 MB) download, whereas the current .NET Framework
+> build is a lightweight (~200 KB) drop-in that relies on the .NET Framework already
+> present on Windows. The trade-off is that users must have .NET Framework installed,
+> which is acceptable for the Windows-focused audience. Do **not** migrate this to an
+> SDK-style / global-tool project unless this trade-off is explicitly revisited.
+
 **Data flow:**
 1. `Program.cs` — parses CLI args, builds a `Features` config, walks file/folder paths, calls `StreamReaderExtension.MinifyHtmlCode`, writes output in-place.
 2. `Features.cs` — parses all CLI flags (`ignorehtmlcomments`, `ignorejscomments`, `ignoreknockoutcomments`, numeric `MaxLength`) from `string[] args`.
