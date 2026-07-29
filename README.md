@@ -17,6 +17,12 @@ A fast and efficient command-line tool to minify your HTML, Razor views, and Web
 - 🛡️ **Safe Minification** - Preserves content inside `<pre>`, `<textarea>`, and `<code>` tags, and normalises attribute whitespace
 - 🔄 **CI/CD Ready** - Easy integration with MSBuild and build pipelines
 
+## 📊 Beautiful Reporting
+
+Every run finishes with a clear, colour-coded summary - per-file savings plus overall compression, throughput, and elapsed time:
+
+<img src="docs/images/reporting.png" alt="HTML Minifier console reporting output showing per-file savings and a minification summary" width="400">
+
 ## 📦 Installation
 
 1. Download the latest release from the [releases page](https://github.com/deanhume/html-minifier/releases)
@@ -143,7 +149,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-Copyright (C) Dean Hume 2013 - 2025
+Copyright (C) Dean Hume 2013 - 2026
 
 Released under the [MIT License](LICENSE.md)
 
