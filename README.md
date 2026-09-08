@@ -25,9 +25,8 @@ Every run finishes with a clear, colour-coded summary - per-file savings plus ov
 
 ## 📦 Installation
 
-1. Download the latest release from the [releases page](https://github.com/deanhume/html-minifier/releases)
-2. Extract the `HtmlMinifier.exe` to your desired location
-3. Add the tool to your PATH or reference it directly
+See [INSTALL.md](INSTALL.md) for release downloads, prerequisites, installation,
+and instructions for obtaining and building the source.
 
 ## 🚀 Quick Start
 
@@ -140,7 +139,11 @@ The following content is never altered by minification:
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for the
+development setup, coding standards, acceptance requirements, and pull request
+process.
+
+To report a bug or propose an enhancement, follow [SUPPORT.md](SUPPORT.md).
 
 ## 📝 Requirements
 
@@ -156,4 +159,3 @@ Released under the [MIT License](LICENSE.md)
 ---
 
 **Made with ❤️ by [Dean Hume](https://deanhume.com)**
-
