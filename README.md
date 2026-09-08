@@ -2,6 +2,7 @@
 
 ![Github Actions Status](https://github.com/deanhume/html-minifier/actions/workflows/dotnet-desktop.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14544/badge)](https://www.bestpractices.dev/projects/14544)
 
 A fast and efficient command-line tool to minify your HTML, Razor views, and Web Forms views. Reduce file sizes, improve load times, and deliver a better user experience by removing unnecessary whitespace and comments from your HTML files.
 
