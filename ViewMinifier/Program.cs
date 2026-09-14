@@ -80,18 +80,18 @@ namespace HtmlMinifier
                         }
                         else
                         {
-                            Console.WriteLine($"Warning: Path not found - {arg}");
+                            ConsoleReporter.ShowWarning($"Path not found - {arg}");
                             errorCount++;
                         }
                     }
                     catch (UnauthorizedAccessException ex)
                     {
-                        Console.WriteLine($"Error: Access denied to {arg} - {ex.Message}");
+                        ConsoleReporter.ShowError($"Access denied to {arg} - {ex.Message}");
                         errorCount++;
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error processing {arg}: {ex.Message}");
+                        ConsoleReporter.ShowError($"Error processing {arg}: {ex.Message}");
                         errorCount++;
                     }
                 }
@@ -104,8 +104,7 @@ namespace HtmlMinifier
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fatal error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                ConsoleReporter.ShowFatalError(ex);
                 Environment.Exit(1);
             }
         }
@@ -154,14 +153,14 @@ namespace HtmlMinifier
                     {
                         lock (lockObject)
                         {
-                            Console.WriteLine($"Error: Access denied to directory {folder} - {ex.Message}");
+                            ConsoleReporter.ShowError($"Access denied to directory {folder} - {ex.Message}");
                         }
                     }
                     catch (Exception ex)
                     {
                         lock (lockObject)
                         {
-                            Console.WriteLine($"Error: Failed to read directory {folder} - {ex.Message}");
+                            ConsoleReporter.ShowError($"Failed to read directory {folder} - {ex.Message}");
                         }
                     }
                 }
@@ -177,28 +176,28 @@ namespace HtmlMinifier
                     {
                         lock (lockObject)
                         {
-                            Console.WriteLine($"Error: Access denied to file {filePath} - {ex.Message}");
+                            ConsoleReporter.ShowError($"Access denied to file {filePath} - {ex.Message}");
                         }
                     }
                     catch (IOException ex)
                     {
                         lock (lockObject)
                         {
-                            Console.WriteLine($"Error: IO error processing file {filePath} - {ex.Message}");
+                            ConsoleReporter.ShowError($"IO error processing file {filePath} - {ex.Message}");
                         }
                     }
                     catch (Exception ex)
                     {
                         lock (lockObject)
                         {
-                            Console.WriteLine($"Error: Failed to process file {filePath} - {ex.Message}");
+                            ConsoleReporter.ShowError($"Failed to process file {filePath} - {ex.Message}");
                         }
                     }
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: Failed to process directory {folderPath} - {ex.Message}");
+                ConsoleReporter.ShowError($"Failed to process directory {folderPath} - {ex.Message}");
                 throw;
             }
         }
@@ -222,7 +221,7 @@ namespace HtmlMinifier
 
             lock (lockObject)
             {
-                Console.WriteLine($"⚙  Processing: {Path.GetFileName(filePath)}");
+                ConsoleReporter.ShowProcessing(Path.GetFileName(filePath));
             }
 
             try
@@ -243,7 +242,7 @@ namespace HtmlMinifier
                 {
                     lock (lockObject)
                     {
-                        Console.WriteLine($"⚠  Warning: Minification resulted in empty content for {filePath}. Skipping.");
+                        ConsoleReporter.ShowWarning($"Minification resulted in empty content for {filePath}. Skipping.");
                     }
                     Interlocked.Increment(ref totalFilesSkipped);
                     return;
@@ -265,14 +264,14 @@ namespace HtmlMinifier
 
                 lock (lockObject)
                 {
-                    Console.WriteLine($"✓  {Path.GetFileName(filePath),-40} {ConsoleReporter.BytesToString(originalSize),8} → {ConsoleReporter.BytesToString(newSize),8} ({percentSaved:F1}% saved)");
+                    ConsoleReporter.ShowFileResult(Path.GetFileName(filePath), originalSize, newSize, percentSaved);
                 }
             }
             catch (UnauthorizedAccessException ex)
             {
                 lock (lockObject)
                 {
-                    Console.WriteLine($"Error: Access denied to {filePath} - {ex.Message}");
+                    ConsoleReporter.ShowError($"Access denied to {filePath} - {ex.Message}");
                 }
                 throw;
             }
@@ -280,7 +279,7 @@ namespace HtmlMinifier
             {
                 lock (lockObject)
                 {
-                    Console.WriteLine($"Error: IO error with {filePath} - {ex.Message}");
+                    ConsoleReporter.ShowError($"IO error with {filePath} - {ex.Message}");
                 }
                 throw;
             }
@@ -288,7 +287,7 @@ namespace HtmlMinifier
             {
                 lock (lockObject)
                 {
-                    Console.WriteLine($"Error: Failed to minify {filePath} - {ex.Message}");
+                    ConsoleReporter.ShowError($"Failed to minify {filePath} - {ex.Message}");
                 }
                 throw;
             }
@@ -326,13 +325,13 @@ namespace HtmlMinifier
             }
             catch (UnauthorizedAccessException ex)
             {
-                Console.WriteLine($"Warning: Access denied to some subdirectories in {path} - {ex.Message}");
+                ConsoleReporter.ShowWarning($"Access denied to some subdirectories in {path} - {ex.Message}");
                 // Return at least the root directory
                 return new List<string> { path };
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: Failed to enumerate directories in {path} - {ex.Message}");
+                ConsoleReporter.ShowError($"Failed to enumerate directories in {path} - {ex.Message}");
                 throw;
             }
         }
@@ -387,17 +386,17 @@ namespace HtmlMinifier
             }
             catch (FileNotFoundException ex)
             {
-                Console.WriteLine($"Error: File not found - {filePath}");
+                ConsoleReporter.ShowError($"File not found - {filePath}");
                 throw new FileNotFoundException($"Cannot minify - file not found: {filePath}", ex);
             }
             catch (IOException ex)
             {
-                Console.WriteLine($"Error: Cannot read file {filePath} - {ex.Message}");
+                ConsoleReporter.ShowError($"Cannot read file {filePath} - {ex.Message}");
                 throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: Failed to minify HTML in {filePath} - {ex.Message}");
+                ConsoleReporter.ShowError($"Failed to minify HTML in {filePath} - {ex.Message}");
                 throw;
             }
         }

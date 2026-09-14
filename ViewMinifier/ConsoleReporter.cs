@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Text;
+using Spectre.Console;
 
 namespace HtmlMinifier
 {
@@ -9,18 +10,40 @@ namespace HtmlMinifier
     /// </summary>
     public static class ConsoleReporter
     {
+        private static IAnsiConsole CreateConsole()
+        {
+            if (Console.OutputEncoding.CodePage != Encoding.UTF8.CodePage)
+                Console.OutputEncoding = new UTF8Encoding(false);
+
+            return AnsiConsole.Create(new AnsiConsoleSettings
+            {
+                Out = new AnsiConsoleOutput(Console.Out)
+            });
+        }
+
         /// <summary>
         /// Shows the welcome banner at the start of execution.
         /// </summary>
         public static void ShowBanner()
         {
+            var console = CreateConsole();
             var version = Assembly.GetExecutingAssembly().GetName().Version;
-            Console.WriteLine();
-            Console.WriteLine("╔════════════════════════════════════════════════╗");
-            Console.WriteLine("║         HTML Minifier v{0}.{1}.{2}             ║", version.Major, version.Minor, version.Build);
-            Console.WriteLine("║    Fast parallel HTML minification tool       ║");
-            Console.WriteLine("╚════════════════════════════════════════════════╝");
-            Console.WriteLine();
+            var content = new Rows(
+                new Text($"HTML Minifier v{version.Major}.{version.Minor}.{version.Build}",
+                    new Style(foreground: Color.DeepSkyBlue1, decoration: Decoration.Bold)),
+                new Text("Fast parallel HTML minification tool", new Style(foreground: Color.Grey)));
+
+            var panel = new Panel(Align.Center(content))
+            {
+                Border = BoxBorder.Rounded,
+                BorderStyle = new Style(Color.DeepSkyBlue1),
+                Header = new PanelHeader(" ✨ HTML MINIFIER ✨ ", Justify.Center),
+                Padding = new Padding(4, 1)
+            };
+
+            console.WriteLine();
+            console.Write(Align.Center(panel));
+            console.WriteLine();
         }
 
         /// <summary>
@@ -35,51 +58,50 @@ namespace HtmlMinifier
         public static void ShowSummary(long totalProcessed, long totalSaved, int totalFilesProcessed, 
             int totalFilesSkipped, int errorCount, DateTime startTime)
         {
+            var console = CreateConsole();
             var endTime = DateTime.Now;
             var duration = (endTime - startTime).TotalSeconds;
             var savedBytes = totalProcessed - totalSaved;
             var percentSaved = totalProcessed > 0 ? (savedBytes * 100.0 / totalProcessed) : 0;
             var filesPerSecond = duration > 0 ? totalFilesProcessed / duration : 0;
 
-            Console.WriteLine();
-            Console.WriteLine("╔════════════════════════════════════════════════╗");
-            Console.WriteLine("║           MINIFICATION SUMMARY                 ║");
-            Console.WriteLine("╠════════════════════════════════════════════════╣");
-            Console.WriteLine("║ Files Processed:  {0,-28} ║", totalFilesProcessed.ToString("N0"));
-            
+            var table = new Table
+            {
+                Border = TableBorder.Rounded,
+                BorderStyle = new Style(Color.DeepSkyBlue1),
+                Title = new TableTitle(" 📊 Minification Summary ", new Style(Color.Yellow, decoration: Decoration.Bold)),
+                ShowHeaders = true
+            };
+
+            table.AddColumn(new TableColumn("[bold deepskyblue1]Metric[/]"));
+            table.AddColumn(new TableColumn("[bold deepskyblue1]Result[/]").RightAligned());
+            table.AddRow(new Markup("[grey]📄 Files processed[/]"), new Markup($"[green]{totalFilesProcessed:N0}[/]"));
+
             if (totalFilesSkipped > 0)
-            {
-                Console.WriteLine("║ Files Skipped:    {0,-28} ║", totalFilesSkipped.ToString("N0"));
-            }
-            
-            Console.WriteLine("║ ─────────────────────────────────────────────  ║");
-            Console.WriteLine("║ Size Before:      {0,-28} ║", BytesToString(totalProcessed));
-            Console.WriteLine("║ Size After:       {0,-28} ║", BytesToString(totalSaved));
-            Console.WriteLine("║ Total Saved:      {0,-28} ║", BytesToString(savedBytes));
-            Console.WriteLine("║ Compression:      {0,-27}% ║", percentSaved.ToString("F1"));
-            Console.WriteLine("║ ─────────────────────────────────────────────  ║");
-            Console.WriteLine("║ Time Elapsed:     {0,-28} ║", FormatDuration(duration));
-            Console.WriteLine("║ Throughput:       {0,-28} ║", $"{filesPerSecond:F1} files/sec");
-            
+                table.AddRow(new Markup("[grey]⏭️ Files skipped[/]"), new Markup($"[yellow]{totalFilesSkipped:N0}[/]"));
+
+            table.AddEmptyRow();
+            table.AddRow(new Markup("[grey]📦 Size before[/]"), new Text(BytesToString(totalProcessed)));
+            table.AddRow(new Markup("[grey]📦 Size after[/]"), new Text(BytesToString(totalSaved)));
+            table.AddRow(new Markup("[grey]💾 Space saved[/]"), new Markup($"[bold green]{Markup.Escape(BytesToString(savedBytes))}[/]"));
+            table.AddRow(new Markup("[grey]📉 Compression[/]"), new Markup($"[bold green]{percentSaved:F1}%[/]"));
+            table.AddEmptyRow();
+            table.AddRow(new Markup("[grey]⏱️ Time elapsed[/]"), new Text(FormatDuration(duration)));
+            table.AddRow(new Markup("[grey]⚡ Throughput[/]"), new Text($"{filesPerSecond:F1} files/sec"));
+
             if (errorCount > 0)
-            {
-                Console.WriteLine("║ ─────────────────────────────────────────────  ║");
-                Console.WriteLine("║ ⚠ Errors:        {0,-28} ║", errorCount.ToString("N0"));
-            }
-            
-            Console.WriteLine("╠════════════════════════════════════════════════╣");
-            
+                table.AddRow(new Markup("[grey]🚨 Errors[/]"), new Markup($"[bold red]{errorCount:N0}[/]"));
+
+            console.WriteLine();
+            console.Write(Align.Center(table));
+            console.WriteLine();
+
             if (errorCount == 0)
-            {
-                Console.WriteLine("║              ✓ SUCCESS                         ║");
-            }
+                console.MarkupLine("[bold green]  🎉 Minification completed successfully[/]");
             else
-            {
-                Console.WriteLine("║         ⚠ COMPLETED WITH ERRORS                ║");
-            }
-            
-            Console.WriteLine("╚════════════════════════════════════════════════╝");
-            Console.WriteLine();
+                console.MarkupLine($"[bold yellow]  ⚠ Completed with {errorCount:N0} error(s)[/]");
+
+            console.WriteLine();
         }
 
         /// <summary>
@@ -87,7 +109,17 @@ namespace HtmlMinifier
         /// </summary>
         public static void ShowUsage()
         {
-            Console.WriteLine(GetUsageText());
+            var console = CreateConsole();
+            var panel = new Panel(new Markup(
+                "[yellow]Please provide a file or folder path to process.[/]\n" +
+                "Run [deepskyblue1]HtmlMinifier.exe --help[/] for usage and examples."))
+            {
+                Border = BoxBorder.Rounded,
+                BorderStyle = new Style(Color.Yellow),
+                Header = new PanelHeader(" Usage ")
+            };
+
+            console.Write(panel);
         }
 
         /// <summary>
@@ -104,7 +136,13 @@ namespace HtmlMinifier
         /// </summary>
         public static void ShowHelp()
         {
-            Console.WriteLine(GetHelpText());
+            CreateConsole().Write(new Panel(new Text(GetHelpText()))
+            {
+                Border = BoxBorder.Rounded,
+                BorderStyle = new Style(Color.DeepSkyBlue1),
+                Header = new PanelHeader(" HTML Minifier Help ", Justify.Center),
+                Padding = new Padding(2, 1)
+            });
         }
 
         /// <summary>
@@ -152,7 +190,40 @@ namespace HtmlMinifier
         /// </summary>
         public static void ShowVersion()
         {
-            Console.WriteLine(GetVersionText());
+            CreateConsole().Write(new Panel(new Text(GetVersionText()))
+            {
+                Border = BoxBorder.Rounded,
+                BorderStyle = new Style(Color.DeepSkyBlue1),
+                Header = new PanelHeader(" Version ")
+            });
+        }
+
+        public static void ShowProcessing(string fileName)
+        {
+            CreateConsole().MarkupLine($"[grey]  ⚙️ Processing[/] [deepskyblue1]{Markup.Escape(fileName)}[/]");
+        }
+
+        public static void ShowFileResult(string fileName, long originalSize, long newSize, double percentSaved)
+        {
+            CreateConsole().MarkupLine(
+                $"[green]  ✅[/] [bold]{Markup.Escape(fileName)}[/]  " +
+                $"[grey]{Markup.Escape(BytesToString(originalSize))} → {Markup.Escape(BytesToString(newSize))}[/]  " +
+                $"[green]({percentSaved:F1}% saved)[/]");
+        }
+
+        public static void ShowWarning(string message)
+        {
+            CreateConsole().MarkupLine($"[yellow]  ⚠ {Markup.Escape(message)}[/]");
+        }
+
+        public static void ShowError(string message)
+        {
+            CreateConsole().MarkupLine($"[red]  ✗ {Markup.Escape(message)}[/]");
+        }
+
+        public static void ShowFatalError(Exception exception)
+        {
+            CreateConsole().WriteException(exception, ExceptionFormats.ShortenEverything);
         }
 
         /// <summary>

@@ -1,6 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
 
 namespace HtmlMinifier.Tests
 {
@@ -188,6 +190,90 @@ namespace HtmlMinifier.Tests
             // Check for proper spacing with empty lines
             Assert.IsTrue(helpText.Contains("\n\n") || helpText.Contains("\r\n\r\n"), 
                 "Help text should contain empty lines for readability");
+        }
+
+        [TestMethod]
+        public void ShowBanner_ShouldRenderRoundedPanel()
+        {
+            var originalOut = Console.Out;
+            var output = new StringWriter();
+
+            try
+            {
+                Console.SetOut(output);
+
+                ConsoleReporter.ShowBanner();
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+
+            string banner = output.ToString();
+            Assert.IsTrue(banner.Contains("HTML Minifier"));
+            Assert.IsTrue(banner.Contains("Fast parallel HTML minification tool"));
+            Assert.IsTrue(banner.Contains("╭") && banner.Contains("╯"),
+                "The banner should use a rounded Spectre.Console panel.");
+        }
+
+        [TestMethod]
+        public void ShowSummary_ShouldRenderRoundedResultsTable()
+        {
+            var originalOut = Console.Out;
+            var output = new StringWriter();
+
+            try
+            {
+                Console.SetOut(output);
+
+                ConsoleReporter.ShowSummary(
+                    totalProcessed: 2048,
+                    totalSaved: 1024,
+                    totalFilesProcessed: 4,
+                    totalFilesSkipped: 1,
+                    errorCount: 0,
+                    startTime: DateTime.Now.AddSeconds(-2));
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+            }
+
+            string summary = output.ToString();
+            Assert.IsTrue(summary.Contains("Minification Summary"));
+            Assert.IsTrue(summary.Contains("Metric"));
+            Assert.IsTrue(summary.Contains("Result"));
+            Assert.IsTrue(summary.Contains("Files processed"));
+            Assert.IsTrue(summary.Contains("Compression"));
+            Assert.IsTrue(summary.Contains("50.0%"));
+            Assert.IsTrue(summary.Contains("📄"), "File metrics should have an emoji.");
+            Assert.IsTrue(summary.Contains("📉"), "Compression should have an emoji.");
+            Assert.IsTrue(summary.Contains("⚡"), "Throughput should have an emoji.");
+            Assert.IsTrue(summary.Contains("╭") && summary.Contains("╯"),
+                "The summary should use a rounded Spectre.Console table.");
+        }
+
+        [TestMethod]
+        public void ShowProcessing_ShouldEnableUtf8ConsoleOutput()
+        {
+            Encoding originalEncoding = Console.OutputEncoding;
+            TextWriter originalOut = Console.Out;
+
+            try
+            {
+                Console.SetOut(new StringWriter());
+                Console.OutputEncoding = Encoding.ASCII;
+
+                ConsoleReporter.ShowProcessing("example.html");
+
+                Assert.AreEqual(Encoding.UTF8.CodePage, Console.OutputEncoding.CodePage,
+                    "Unicode status icons require UTF-8 console output.");
+            }
+            finally
+            {
+                Console.SetOut(originalOut);
+                Console.OutputEncoding = originalEncoding;
+            }
         }
     }
 }
